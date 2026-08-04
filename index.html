@@ -9,7 +9,8 @@
 <meta name="theme-color" content="#111113">
 <title>Music Theory Visualizer</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@font-face{font-family:'Madina';src:url('fonts/Madina.ttf') format('truetype');font-weight:400;font-display:swap;}
 :root{
   --bg:#0a0a0b;--surface:#111113;--surface2:#18181c;--surface3:#1f1f24;
   --border:#252529;--border2:#2e2e34;--text:#e4e2dd;--muted:#636268;--muted2:#4a494f;--muted-bright:#9c9aa4;
@@ -52,41 +53,41 @@ header{
   padding:0 20px 10px;
 }
 .header-app-title{
-  font-family:'Cinzel',serif;font-size:clamp(15px,2.2vw,20px);font-weight:600;
+  font-family:'Madina','Cinzel',serif;font-size:clamp(18px,2.5vw,26px);font-weight:400;
   color:var(--text);letter-spacing:.06em;
 }
 .header-app-title span{color:var(--gold);}
 
 /* ── MAIN TAB BAR ── */
 .main-tab-bar{
-  display:flex;align-items:stretch;gap:0;
-  padding:0 12px;
+  display:flex;align-items:center;gap:6px;
+  padding:8px 12px 10px;
   border-top:1px solid var(--border);
 }
 /* primary tabs: Scales / Chords / Progressions */
 .mode-tab{
-  flex:1;padding:13px 8px;cursor:pointer;
+  flex:1;padding:11px 8px;cursor:pointer;
   font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;
-  color:var(--text);opacity:.55;
-  background:transparent;border:none;border-bottom:3px solid transparent;
+  color:var(--text);opacity:.7;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
   transition:all .15s;white-space:nowrap;text-align:center;
 }
-.mode-tab:hover{opacity:.85;}
-.mode-tab.active{opacity:1;color:var(--gold);border-bottom-color:var(--gold);}
+.mode-tab:hover{opacity:1;border-color:var(--gold);color:var(--gold);}
+.mode-tab.active{opacity:1;color:#000;background:var(--gold);border-color:var(--gold);box-shadow:0 2px 12px rgba(240,165,0,.3);}
 
 /* separator between primary and utility tabs */
-.tab-bar-sep{width:1px;background:var(--border2);margin:8px 4px;}
+.tab-bar-sep{width:1px;background:var(--border2);height:28px;flex-shrink:0;margin:0 2px;}
 
 /* utility tabs: How To Use / System / About */
 .util-tab{
-  padding:13px 10px;cursor:pointer;
+  padding:11px 10px;cursor:pointer;
   font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;
-  color:var(--muted);opacity:.8;
-  background:transparent;border:none;border-bottom:3px solid transparent;
+  color:var(--muted-bright);opacity:.8;
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
   transition:all .15s;white-space:nowrap;text-align:center;
 }
-.util-tab:hover{opacity:1;color:var(--text);}
-.util-tab.active{opacity:1;color:var(--text);border-bottom-color:var(--muted-bright);}
+.util-tab:hover{opacity:1;color:var(--text);border-color:var(--border2);}
+.util-tab.active{opacity:1;color:var(--text);background:var(--surface2);border-color:var(--border2);}
 
 /* ── SUB-DASH (sticky below header) ── */
 .sub-dash{
@@ -101,36 +102,33 @@ header{
   max-width:1100px;margin:0 auto;
   display:flex;gap:8px;align-items:center;flex-wrap:nowrap;
 }
-/* view toggle inside sub-dash */
+/* sub-dash: all controls share one height */
+.sub-dash-inner{align-items:stretch;}
+
+/* view toggle */
 .view-toggle{display:flex;gap:6px;flex-shrink:0;}
 .view-btn{
-  padding:8px 12px;cursor:pointer;
+  height:44px;padding:0 14px;cursor:pointer;
   font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;
-  color:var(--text);opacity:.55;border:1px solid var(--border2);
-  background:var(--surface2);border-radius:8px;transition:all .15s;text-align:center;white-space:nowrap;
+  color:var(--text);opacity:.6;border:1px solid var(--border2);
+  background:var(--surface2);border-radius:8px;transition:all .15s;
+  white-space:nowrap;display:flex;align-items:center;justify-content:center;
 }
-.view-btn:hover{opacity:.85;}
+.view-btn:hover{opacity:.9;}
 .view-btn.active{background:var(--surface3);color:var(--gold);opacity:1;border-color:var(--gold);}
 
 /* sub-dash separator */
-.sub-dash-sep{width:1px;background:var(--border2);height:28px;flex-shrink:0;margin:0 2px;}
+.sub-dash-sep{width:1px;background:var(--border2);height:36px;flex-shrink:0;margin:0 2px;align-self:center;}
 
-/* sub-dash selects */
-.sub-dash-selects{display:flex;gap:6px;flex:1;min-width:0;}
+/* sub-dash selects — stretch to same height */
+.sub-dash-selects{display:flex;gap:6px;flex:1;min-width:0;align-items:stretch;}
 .sub-ctrl{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
 .sub-ctrl-label{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.13em;color:var(--muted);text-transform:uppercase;text-align:center;}
+.sub-ctrl select{height:100%;min-height:30px;}
 
-/* sub-dash right actions */
-.sub-dash-actions{display:flex;gap:6px;flex-shrink:0;margin-left:auto;}
-.sub-action-btn{
-  padding:8px 12px;cursor:pointer;
-  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;
-  color:var(--text);opacity:.7;border:1px solid var(--border2);
-  background:var(--surface2);border-radius:8px;transition:all .15s;white-space:nowrap;
-  display:flex;align-items:center;gap:5px;
-}
-.sub-action-btn:hover{opacity:1;border-color:var(--gold);color:var(--gold);}
-.sub-action-btn.muted{opacity:.4;}
+/* sub-dash actions removed — Sound/Share live in System tab */
+.sub-dash-actions{display:none;}
+.sub-action-btn{display:none;}
 
 /* CONTROLS (legacy — tuning/frets row, kept for fretboard/piano extras) */
 .controls{background:transparent;border-bottom:none;padding:0;}
@@ -165,15 +163,15 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 #piano-svg{width:100%;height:auto;display:block;}
 
 /* LEGEND */
-.legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;align-items:center;}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
-.legend-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
-.legend-sep{width:1px;height:13px;background:var(--border2);margin:0 1px;}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center;justify-content:center;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted-bright);}
+.legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.legend-sep{width:1px;height:16px;background:var(--border2);margin:0 2px;}
 
 /* INFO CARD */
 .scale-info{margin-top:18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 @media(max-width:560px){.scale-info{grid-template-columns:1fr;}}
-.ibt{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:7px;}
+.ibt{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--muted-bright);text-transform:uppercase;margin-bottom:8px;}
 .scale-name-display{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px;}
 .scale-name-display span{color:var(--gold);}
 .scale-character{font-size:13px;color:var(--muted-bright);font-style:italic;margin-bottom:10px;}
@@ -480,7 +478,7 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* title */
 #splash-title{
-  font-family:'Cinzel',serif;font-size:64px;font-weight:700;
+  font-family:'Madina','Cinzel',serif;font-size:72px;font-weight:400;
   line-height:1.15;margin:0 0 28px;letter-spacing:.5px;
   text-shadow:0 3px 0 rgba(0,0,0,.55),0 6px 10px rgba(0,0,0,.75),0 2px 24px rgba(0,0,0,.65);
 }
@@ -522,10 +520,7 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
   white-space:nowrap;font-family:'Space Mono',monospace;
 }
 
-/* on wide viewports, portrait art looks better contained */
-@media(min-width:900px){
-  #splash-screen{background-size:contain;}
-}
+/* keep cover on all viewports — portrait art fills edge to edge */
 
 .about-venmo-btn{
   display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;
@@ -604,10 +599,7 @@ body.splash-locked{overflow:hidden;height:100vh;}
         <div id="tuning-badge-wrap"></div>
       </div>
     </div>
-    <div class="sub-dash-actions">
-      <button class="sub-action-btn" id="btn-sound" onclick="toggleAudio()" title="Mute / unmute sound">🔊 Sound</button>
-      <button class="sub-action-btn" onclick="shareApp()" title="Share this app">📤 Share</button>
-    </div>
+    <!-- Sound/Share live in System tab, not sub-dash -->
   </div>
 </div>
 
@@ -773,14 +765,8 @@ body.splash-locked{overflow:hidden;height:100vh;}
 function dismissSplash(){
   document.getElementById('splash-screen').classList.add('hidden');
   document.body.classList.remove('splash-locked');
-  try{ sessionStorage.setItem('mv_entered','1'); }catch(e){}
 }
-try{
-  if(sessionStorage.getItem('mv_entered')==='1'){
-    document.getElementById('splash-screen').classList.add('hidden');
-    document.body.classList.remove('splash-locked');
-  }
-}catch(e){}
+// Splash always shows on every page load — no sessionStorage skip
 function forceRefresh(){
   if('caches' in window){
     caches.keys().then(names=>names.forEach(n=>caches.delete(n)));
@@ -1146,8 +1132,10 @@ function chordPcsToMidi(chordPcs,rootPc,baseMidi=60){
 }
 function toggleAudio(){
   audioEnabled=!audioEnabled;
-  const btn=document.getElementById('btn-sound');
-  if(btn)btn.innerHTML=audioEnabled?'🔊 Sound':'🔇 Sound';
+  // update any sound buttons that exist (System tab rebuilds fresh each open)
+  document.querySelectorAll('.sound-toggle-btn').forEach(b=>{
+    b.innerHTML=audioEnabled?'🔊 Sound On':'🔇 Sound Off';
+  });
   if(audioEnabled)getAudioCtx();
 }
 
@@ -2412,6 +2400,7 @@ function setMode(m){
   if(m==='help') buildInstructions();
   if(m==='about') buildAbout();
   if(m==='system') buildSystem();
+  if(window._advanceAppBg) window._advanceAppBg();
   render();
 }
 
@@ -2696,25 +2685,28 @@ setMode('scale');
 // ════════════════════════════════════════
 function buildSystem(){
   const wrap=document.getElementById('mode-system');
-  if(wrap.dataset.built) return;
-  wrap.dataset.built='1';
+  // rebuild every open so button label reflects current audio state
   wrap.innerHTML=`<div style="max-width:760px;margin:0 auto;">
     <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;">System</div>
     <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Settings &amp; Controls</h2>
     ${helpSection('Sound',`
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-        <button class="sub-action-btn" id="system-sound-btn" onclick="toggleAudio()" style="font-size:14px;padding:12px 20px;">
+        <button class="sound-toggle-btn bug-report-btn" onclick="toggleAudio()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;padding:12px 20px;margin-top:0;">
           ${audioEnabled?'🔊 Sound On':'🔇 Sound Off'}
         </button>
-        <span style="font-size:13px;color:var(--muted-bright);">Tap any note or chord to hear it played. Toggle sound on/off here or from the sub-bar on any content tab.</span>
+        <span style="font-size:13px;color:var(--muted-bright);">Tap any note or chord to hear it played.</span>
+      </div>
+    `)}
+    ${helpSection('Share',`
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <button class="bug-report-btn" onclick="shareApp()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;padding:12px 20px;margin-top:0;">📤 Share This App</button>
+        <span style="font-size:13px;color:var(--muted-bright);">Share a link to this app with friends.</span>
       </div>
     `)}
     ${helpSection('App',`
       <div style="display:flex;flex-direction:column;gap:12px;">
-        <div>
-          <button class="bug-report-btn" onclick="forceRefresh()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);">⟳ Refresh / Resync</button>
-        </div>
-        <div style="font-size:13px;color:var(--muted-bright);">Reload the app to pick up any updates. Your settings are not affected.</div>
+        <button class="bug-report-btn" onclick="forceRefresh()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);margin-top:0;align-self:flex-start;">⟳ Refresh / Resync</button>
+        <div style="font-size:13px;color:var(--muted-bright);">Reload the app to pick up any updates.</div>
       </div>
     `)}
     <div style="text-align:center;margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
@@ -2722,11 +2714,6 @@ function buildSystem(){
       © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
     </div>
   </div>`;
-  // keep system sound button in sync with main btn-sound
-  const sysBtn=wrap.querySelector('#system-sound-btn');
-  if(sysBtn) sysBtn.addEventListener('click',()=>{
-    sysBtn.innerHTML=audioEnabled?'🔊 Sound On':'🔇 Sound Off';
-  });
 }
 
 // ════════════════════════════════════════
@@ -2756,23 +2743,20 @@ function buildSystem(){
     document.getElementById('splash-screen').style.backgroundImage=`url('${LANDING_IMAGES[idx]}')`;
   }
 
-  // App background: cycle through BG_IMAGES while in app
-  // Uses CSS background-image on body; fades via overlay opacity trick
+  // App background: pick random on load, advance on mode change
   if(BG_IMAGES.length){
-    const overlay=document.getElementById('app-bg-overlay');
     let bgIdx=Math.floor(Math.random()*BG_IMAGES.length);
     document.body.style.backgroundImage=`url('${BG_IMAGES[bgIdx]}')`;
-    if(BG_IMAGES.length>1){
-      setInterval(()=>{
-        bgIdx=(bgIdx+1)%BG_IMAGES.length;
-        // fade overlay to black, swap image, fade back
-        overlay.style.background='rgba(10,10,11,1)';
-        setTimeout(()=>{
-          document.body.style.backgroundImage=`url('${BG_IMAGES[bgIdx]}')`;
-          overlay.style.background='rgba(10,10,11,0.82)';
-        },600);
-      },14000);
-    }
+    window._advanceAppBg=function(){
+      if(BG_IMAGES.length<2) return;
+      const overlay=document.getElementById('app-bg-overlay');
+      bgIdx=(bgIdx+1)%BG_IMAGES.length;
+      overlay.style.background='rgba(10,10,11,1)';
+      setTimeout(()=>{
+        document.body.style.backgroundImage=`url('${BG_IMAGES[bgIdx]}')`;
+        overlay.style.background='rgba(10,10,11,0.82)';
+      },600);
+    };
   }
 })();
 
