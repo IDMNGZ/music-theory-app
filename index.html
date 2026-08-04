@@ -22,17 +22,18 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
   body{padding-bottom:env(safe-area-inset-bottom);}
 }
 
-/* ── APP BACKGROUND (cycling art) ── */
-#app-bg-canvas,#app-bg-canvas-next{
-  position:fixed;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center;z-index:-2;
-  pointer-events:none;
+/* ── APP BACKGROUND (cycling art via body background-image) ── */
+body{
+  background-color:var(--bg);
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  transition:background-image 0s; /* swap handled by JS fade via overlay */
 }
-#app-bg-canvas{transition:opacity 1.2s ease;}
-#app-bg-canvas-next{opacity:0;transition:opacity 1.2s ease;}
 #app-bg-overlay{
   position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:rgba(10,10,11,0.82);
+  transition:opacity .6s ease;
 }
 
 /* ── HEADER / TITLE BAR ── */
@@ -463,73 +464,67 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 /* ── SPLASH SCREEN ── */
 #splash-screen{
   position:fixed;inset:0;z-index:1000;
-  background:#0a0a0b;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  gap:16px;
-  padding-left:24px;padding-right:24px;
-  padding-top:max(40px,env(safe-area-inset-top));
-  padding-bottom:max(44px,env(safe-area-inset-bottom));
+  background-color:#0a0c14;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#f2efe6;text-align:center;
+  padding:24px;
+  padding-top:max(24px,env(safe-area-inset-top));
+  padding-bottom:max(24px,env(safe-area-inset-bottom));
   transition:opacity .4s ease,visibility .4s ease;
   overflow:hidden;
 }
 #splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none;}
 
-/* cycling background art */
-#splash-bg-canvas{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center;z-index:0;
-  transition:opacity 1s ease;
-}
-#splash-bg-canvas-next{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;object-position:center;z-index:0;
-  opacity:0;transition:opacity 1s ease;
-}
-/* dark gradient overlay so text stays readable */
-#splash-overlay{
-  position:absolute;inset:0;z-index:1;
-  background:linear-gradient(to bottom,rgba(0,0,0,.15) 0%,rgba(0,0,0,.25) 50%,rgba(0,0,0,.75) 100%);
-}
-
-/* title block */
-#splash-title-block{
-  position:relative;z-index:2;
-  text-align:center;margin-bottom:8px;
-}
+/* title */
 #splash-title{
-  font-family:'Cinzel',serif;font-size:clamp(28px,7vw,52px);font-weight:700;
-  color:#fff;letter-spacing:.04em;line-height:1.1;
-  text-shadow:0 2px 24px rgba(0,0,0,.8),0 0 60px rgba(0,0,0,.5);
-}
-#splash-subtitle{
-  font-family:'Space Mono',monospace;font-size:clamp(9px,2vw,11px);
-  letter-spacing:.22em;color:rgba(255,255,255,.55);text-transform:uppercase;
-  margin-top:8px;
+  font-family:'Cinzel',serif;font-size:64px;font-weight:700;
+  line-height:1.15;margin:0 0 28px;letter-spacing:.5px;
+  text-shadow:0 3px 0 rgba(0,0,0,.55),0 6px 10px rgba(0,0,0,.75),0 2px 24px rgba(0,0,0,.65);
 }
 
 /* buttons */
-#splash-btn-row{position:relative;z-index:2;display:flex;gap:12px;width:100%;max-width:360px;}
-#splash-enter-btn,#splash-share-btn{
-  flex:1;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
-  font-weight:700;border-radius:8px;padding:15px 16px;cursor:pointer;transition:transform .15s,opacity .15s;
-  box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;text-decoration:none;
-  display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;border:none;
+#splash-btn-row{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;
 }
-#splash-enter-btn{background:var(--gold);color:#000;}
-#splash-share-btn{background:#5a4fcf;color:#fff;}
-#splash-enter-btn:active,#splash-share-btn:active{transform:scale(.96);opacity:.85;}
+#splash-enter-btn{
+  display:inline-block;padding:16px 44px;font-size:19px;font-weight:700;
+  color:#14151a;background:#c9a536;border-radius:8px;border:none;
+  text-decoration:none;cursor:pointer;font-family:inherit;
+  box-shadow:0 4px 20px rgba(201,165,54,.4);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+#splash-enter-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(201,165,54,.55);}
+#splash-share-btn{
+  display:inline-flex;align-items:center;gap:7px;padding:16px 30px;font-size:19px;font-weight:700;
+  color:#f2efe6;background:rgba(36,20,66,.72);border:2px solid #c9a536;border-radius:8px;
+  cursor:pointer;font-family:inherit;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  box-shadow:0 4px 20px rgba(0,0,0,.35);
+  transition:transform .15s ease,background .15s ease,border-color .15s ease;
+}
+#splash-share-btn:hover{transform:translateY(-2px);background:rgba(50,28,92,.82);border-color:#e0bd4c;}
+#splash-enter-btn:active,#splash-share-btn:active{transform:scale(.97);opacity:.88;}
 
-/* created-by footer */
-#splash-credit{
-  position:relative;z-index:2;text-align:center;
+/* pinned credit block */
+#splash-bottom{
+  position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  z-index:2;
 }
 #splash-credit-name{
-  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;
-  color:rgba(255,255,255,.85);letter-spacing:.04em;
+  font-size:19px;font-weight:700;color:rgba(242,239,230,.9);
+  white-space:nowrap;text-shadow:0 1px 8px rgba(0,0,0,.65);
 }
 #splash-version-footer{
-  font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.38);
-  text-align:center;letter-spacing:.04em;line-height:1.6;margin-top:3px;
+  font-size:12px;line-height:1.8;color:rgba(242,239,230,.55);
+  white-space:nowrap;font-family:'Space Mono',monospace;
+}
+
+/* on wide viewports, portrait art looks better contained */
+@media(min-width:900px){
+  #splash-screen{background-size:contain;}
 }
 
 .about-venmo-btn{
@@ -551,25 +546,17 @@ body.splash-locked{overflow:hidden;height:100vh;}
 </head>
 <body class="splash-locked">
 
-<!-- app background art (cycling) -->
-<img id="app-bg-canvas" src="" alt="" aria-hidden="true">
-<img id="app-bg-canvas-next" src="" alt="" aria-hidden="true">
+<!-- app background overlay (bg-image set on body by JS) -->
 <div id="app-bg-overlay"></div>
 
 <!-- SPLASH SCREEN -->
 <div id="splash-screen">
-  <img id="splash-bg-canvas" src="" alt="" aria-hidden="true">
-  <img id="splash-bg-canvas-next" src="" alt="" aria-hidden="true">
-  <div id="splash-overlay"></div>
-  <div id="splash-title-block">
-    <div id="splash-title">Music Theory<br>Visualizer</div>
-    <div id="splash-subtitle">Scale · Chord · Progression Reference</div>
-  </div>
+  <div id="splash-title">Music Theory<br>Visualizer</div>
   <div id="splash-btn-row">
     <button id="splash-enter-btn" onclick="dismissSplash()">Enter</button>
     <button id="splash-share-btn" onclick="shareApp()">📤 Share</button>
   </div>
-  <div id="splash-credit">
+  <div id="splash-bottom">
     <div id="splash-credit-name">Created by Ian Dominguez</div>
     <div id="splash-version-footer"></div>
   </div>
@@ -2432,11 +2419,11 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v2.0';
-const APP_VERSION_DATE = 'June 23, 2026';
+const APP_VERSION = 'v2.1';
+const APP_VERSION_DATE = 'August 4, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){
-  splashVersionFooter.textContent = `${APP_VERSION} — ${APP_VERSION_DATE} · © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio`;
+  splashVersionFooter.innerHTML = `Music Theory Visualizer ${APP_VERSION}<br>© ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.`;
 }
 function bugReportSection(){
   return helpSection('Found a Bug? Have a Suggestion?', `
@@ -2568,7 +2555,7 @@ function buildAbout(){
     <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Created by Ian Dominguez</h2>
     ${helpSection('Bio',`
       <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
-        <img src="IanD_BioPic.JPG" alt="Ian Dominguez" style="flex:0 0 auto;display:block;width:140px;height:140px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);" onerror="this.style.display='none'">
+        <img src="images/about/IanD_BioPic.JPG" alt="Ian Dominguez" style="flex:0 0 auto;display:block;width:140px;height:140px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);" onerror="this.style.display='none'">
         <div style="flex:1 1 280px;min-width:0;">
           I am a principal game designer, indie writer, indie artist, and self-taught amateur musician (both Guitar and Keyboard)
           <br><br>
@@ -2597,7 +2584,7 @@ function buildAbout(){
     `)}
     ${bugReportSection()}
     <div style="text-align:center;margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
-      Music Theory Visualizer ${APP_VERSION} — ${APP_VERSION_DATE}<br>
+      Music Theory Visualizer ${APP_VERSION}<br>
       © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
     </div>
   </div>`;
@@ -2731,7 +2718,7 @@ function buildSystem(){
       </div>
     `)}
     <div style="text-align:center;margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
-      Music Theory Visualizer ${APP_VERSION} — ${APP_VERSION_DATE}<br>
+      Music Theory Visualizer ${APP_VERSION}<br>
       © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
     </div>
   </div>`;
@@ -2746,39 +2733,47 @@ function buildSystem(){
 // BACKGROUND CYCLING
 // ════════════════════════════════════════
 (function(){
-  // Images go in images/landing/ and images/backgrounds/
-  // Add filenames here as you drop art into each folder.
-  const LANDING_IMAGES=[];   // e.g. 'images/landing/art1.jpg'
-  const BG_IMAGES=[];        // e.g. 'images/backgrounds/bg1.jpg'
+  const LANDING_IMAGES=[
+    'images/landing/MusicLandingImg_Bowie-1.png',
+    'images/landing/MusicLandingImg_Bowie-2.png',
+    'images/landing/MusicLandingImg_Bowie-3.png',
+    'images/landing/MusicLandingImg_Bowie-4.png',
+    'images/landing/MusicLandingImg_Bowie-5.png',
+    'images/landing/MusicLandingImg_Bowie-6.png',
+    'images/landing/MusicLandingImg_Bowie-7.png',
+  ];
+  const BG_IMAGES=[
+    'images/backgrounds/app-bg-01.jpg',
+    'images/backgrounds/app-bg-02.jpg',
+    'images/backgrounds/app-bg-03.jpg',
+    'images/backgrounds/app-bg-04.jpg',
+    'images/backgrounds/app-bg-05.jpg',
+  ];
 
-  function cycleImages(imgA, imgB, list, intervalMs){
-    if(!list||list.length===0) return;
-    let idx=Math.floor(Math.random()*list.length);
-    imgA.src=list[idx];
-    imgA.style.opacity='1';
-    if(list.length<2) return;
-    setInterval(()=>{
-      idx=(idx+1)%list.length;
-      imgB.src=list[idx];
-      imgB.style.opacity='1';
-      imgA.style.opacity='0';
-      setTimeout(()=>{
-        imgA.src=imgB.src;
-        imgA.style.opacity='1';
-        imgB.style.opacity='0';
-      },1200);
-    },intervalMs);
+  // Splash: pick one random image per load (CSS background-image on #splash-screen)
+  if(LANDING_IMAGES.length){
+    const idx=Math.floor(Math.random()*LANDING_IMAGES.length);
+    document.getElementById('splash-screen').style.backgroundImage=`url('${LANDING_IMAGES[idx]}')`;
   }
 
-  // splash background
-  const splashA=document.getElementById('splash-bg-canvas');
-  const splashB=document.getElementById('splash-bg-canvas-next');
-  if(splashA&&splashB) cycleImages(splashA,splashB,LANDING_IMAGES,8000);
-
-  // app background
-  const appA=document.getElementById('app-bg-canvas');
-  const appB=document.getElementById('app-bg-canvas-next');
-  if(appA&&appB) cycleImages(appA,appB,BG_IMAGES,12000);
+  // App background: cycle through BG_IMAGES while in app
+  // Uses CSS background-image on body; fades via overlay opacity trick
+  if(BG_IMAGES.length){
+    const overlay=document.getElementById('app-bg-overlay');
+    let bgIdx=Math.floor(Math.random()*BG_IMAGES.length);
+    document.body.style.backgroundImage=`url('${BG_IMAGES[bgIdx]}')`;
+    if(BG_IMAGES.length>1){
+      setInterval(()=>{
+        bgIdx=(bgIdx+1)%BG_IMAGES.length;
+        // fade overlay to black, swap image, fade back
+        overlay.style.background='rgba(10,10,11,1)';
+        setTimeout(()=>{
+          document.body.style.backgroundImage=`url('${BG_IMAGES[bgIdx]}')`;
+          overlay.style.background='rgba(10,10,11,0.82)';
+        },600);
+      },14000);
+    }
+  }
 })();
 
 // measure header height for sub-dash top offset
