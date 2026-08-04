@@ -10,7 +10,7 @@
 <title>Music Theory Visualizer</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-@font-face{font-family:'Madina';src:url('fonts/Madina.ttf') format('truetype');font-weight:400;font-display:swap;}
+@font-face{font-family:'BlackFlag';src:url('fonts/BlackFlag.ttf') format('truetype');font-weight:400;font-display:swap;}
 :root{
   --bg:#0a0a0b;--surface:#111113;--surface2:#18181c;--surface3:#1f1f24;
   --border:#252529;--border2:#2e2e34;--text:#e4e2dd;--muted:#636268;--muted2:#4a494f;--muted-bright:#9c9aa4;
@@ -53,7 +53,7 @@ header{
   padding:0 20px 10px;
 }
 .header-app-title{
-  font-family:'Madina','Cinzel',serif;font-size:clamp(18px,2.5vw,26px);font-weight:400;
+  font-family:'BlackFlag','Cinzel',serif;font-size:clamp(18px,2.5vw,26px);font-weight:400;
   color:var(--text);letter-spacing:.06em;
 }
 .header-app-title span{color:var(--gold);}
@@ -100,15 +100,15 @@ header{
 .sub-dash.visible{display:block;}
 .sub-dash-inner{
   max-width:1100px;margin:0 auto;
-  display:flex;gap:8px;align-items:center;flex-wrap:nowrap;
+  display:flex;gap:8px;align-items:stretch;flex-wrap:nowrap;
 }
 /* sub-dash: all controls share one height */
 .sub-dash-inner{align-items:stretch;}
 
-/* view toggle */
-.view-toggle{display:flex;gap:6px;flex-shrink:0;}
+/* view toggle — equal-width buttons filling their group */
+.view-toggle{display:flex;gap:6px;flex:0 0 auto;}
 .view-btn{
-  height:44px;padding:0 14px;cursor:pointer;
+  flex:1;padding:0 10px;cursor:pointer;min-width:80px;
   font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;
   color:var(--text);opacity:.6;border:1px solid var(--border2);
   background:var(--surface2);border-radius:8px;transition:all .15s;
@@ -478,7 +478,7 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* title */
 #splash-title{
-  font-family:'Madina','Cinzel',serif;font-size:72px;font-weight:400;
+  font-family:'BlackFlag','Cinzel',serif;font-size:72px;font-weight:400;
   line-height:1.15;margin:0 0 28px;letter-spacing:.5px;
   text-shadow:0 3px 0 rgba(0,0,0,.55),0 6px 10px rgba(0,0,0,.75),0 2px 24px rgba(0,0,0,.65);
 }
@@ -520,7 +520,10 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
   white-space:nowrap;font-family:'Space Mono',monospace;
 }
 
-/* keep cover on all viewports — portrait art fills edge to edge */
+/* on wide viewports, portrait art looks better contained (matches MTG approach) */
+@media(min-width:900px){
+  #splash-screen{background-size:contain;}
+}
 
 .about-venmo-btn{
   display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;
@@ -776,7 +779,7 @@ function forceRefresh(){
   window.location.replace(url.toString());
 }
 function shareApp(){
-  const shareUrl = 'https://idmngz.github.io/MUSIC/';
+  const shareUrl = 'https://idmngz.github.io/music-theory-app/';
   const shareData = {
     title: 'Music Theory Visualizer',
     text: 'Check out this app for visualizing scales, chords, tunings, and progressions:',
@@ -2115,12 +2118,12 @@ function showProgViz(chordPcs, rootPc, label){
       if(voicing.filter(f=>f>=0).length < 3) return;
       shown++;
       const box = document.createElement('div');
-      box.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 10px 6px;flex:1 1 0;min-width:84px;max-width:130px;box-sizing:border-box;';
+      box.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 12px 8px;flex:1 1 0;min-width:120px;max-width:220px;box-sizing:border-box;';
       const posLabel = document.createElement('div');
       posLabel.style.cssText='font-family:"Space Mono",monospace;font-size:8px;color:var(--muted);text-align:center;margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase;';
       posLabel.textContent = lo===0?'Open Position':`Position ${lo}`;
       box.appendChild(posLabel);
-      makeChordDiagram(chordPcs, rootPc, currentTuning, box, 110, lo, ivMap);
+      makeChordDiagram(chordPcs, rootPc, currentTuning, box, 180, lo, ivMap);
       diagRow.appendChild(box);
     });
     if(shown===0){
@@ -2219,7 +2222,7 @@ function buildProgList(){
         <div class="prog-item-desc">${prog.desc}</div>
         <div class="prog-item-genre" style="font-style:italic">${prog.genre}</div>
         <div class="prog-playback">
-          <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">
+          <span style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--muted-bright);">
             ${progChords.map(ch=>`${ch.name}`).join(' → ')}
           </span>
         </div>
