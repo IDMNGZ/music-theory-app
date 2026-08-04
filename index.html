@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#111113">
 <title>Music Theory Visualizer</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 :root{
   --bg:#0a0a0b;--surface:#111113;--surface2:#18181c;--surface3:#1f1f24;
   --border:#252529;--border2:#2e2e34;--text:#e4e2dd;--muted:#636268;--muted2:#4a494f;--muted-bright:#9c9aa4;
@@ -22,37 +22,125 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
   body{padding-bottom:env(safe-area-inset-bottom);}
 }
 
-/* HEADER */
-header{background:var(--surface);border-bottom:1px solid var(--border);padding-left:20px;padding-right:20px;padding-bottom:16px;padding-top:max(48px, calc(env(safe-area-inset-top) + 22px));}
-.header-inner{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
-.header-top-row{display:block;}
-.eyebrow{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
-.app-subtitle{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-top:3px;}
-h1{font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.025em;line-height:1;}
-h1 span{color:var(--gold);}
+/* ── APP BACKGROUND (cycling art) ── */
+#app-bg-canvas,#app-bg-canvas-next{
+  position:fixed;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;z-index:-2;
+  pointer-events:none;
+}
+#app-bg-canvas{transition:opacity 1.2s ease;}
+#app-bg-canvas-next{opacity:0;transition:opacity 1.2s ease;}
+#app-bg-overlay{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:rgba(10,10,11,0.82);
+}
 
-/* SECONDARY NAV (About / How To Use / Resync) — same treatment as mode/view buttons, smaller scale */
-.header-secondary-nav{display:flex;gap:8px;width:100%;}
-.header-divider{height:1px;background:var(--border2);width:100%;margin:2px 0;}
-.secondary-btn{flex:1;padding:11px 8px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text);opacity:.65;border:1px solid var(--border2);background:var(--surface2);border-radius:10px;transition:all .15s;white-space:nowrap;text-align:center;}
-.secondary-btn:hover,.secondary-btn:active{opacity:1;border-color:var(--gold);color:var(--gold);}
-.secondary-btn.active{opacity:1;border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+/* ── HEADER / TITLE BAR ── */
+header{
+  background:rgba(17,17,19,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding-top:max(14px, calc(env(safe-area-inset-top) + 8px));
+  padding-bottom:0;
+  position:sticky;top:0;z-index:200;
+}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;}
 
-/* MODE TABS — primary, dominant */
-.mode-tabs{display:flex;gap:8px;}
-.mode-tab{flex:1;padding:16px 10px;cursor:pointer;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--text);opacity:.65;border:1px solid var(--border2);background:var(--surface2);border-radius:10px;transition:all .15s;white-space:nowrap;text-align:center;}
-.mode-tab.active{background:var(--gold);color:#000;opacity:1;border-color:var(--gold);box-shadow:0 4px 18px rgba(240,165,0,.3);}
+/* title strip */
+.header-title-strip{
+  display:flex;align-items:center;justify-content:center;
+  padding:0 20px 10px;
+}
+.header-app-title{
+  font-family:'Cinzel',serif;font-size:clamp(15px,2.2vw,20px);font-weight:600;
+  color:var(--text);letter-spacing:.06em;
+}
+.header-app-title span{color:var(--gold);}
 
-/* VIEW TOGGLE — also dominant, stacked under mode tabs */
-.view-toggle{display:flex;gap:8px;}
-.view-btn{flex:1;padding:14px 10px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--text);opacity:.65;border:1px solid var(--border2);background:var(--surface2);border-radius:10px;transition:all .15s;text-align:center;}
+/* ── MAIN TAB BAR ── */
+.main-tab-bar{
+  display:flex;align-items:stretch;gap:0;
+  padding:0 12px;
+  border-top:1px solid var(--border);
+}
+/* primary tabs: Scales / Chords / Progressions */
+.mode-tab{
+  flex:1;padding:13px 8px;cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;
+  color:var(--text);opacity:.55;
+  background:transparent;border:none;border-bottom:3px solid transparent;
+  transition:all .15s;white-space:nowrap;text-align:center;
+}
+.mode-tab:hover{opacity:.85;}
+.mode-tab.active{opacity:1;color:var(--gold);border-bottom-color:var(--gold);}
+
+/* separator between primary and utility tabs */
+.tab-bar-sep{width:1px;background:var(--border2);margin:8px 4px;}
+
+/* utility tabs: How To Use / System / About */
+.util-tab{
+  padding:13px 10px;cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;
+  color:var(--muted);opacity:.8;
+  background:transparent;border:none;border-bottom:3px solid transparent;
+  transition:all .15s;white-space:nowrap;text-align:center;
+}
+.util-tab:hover{opacity:1;color:var(--text);}
+.util-tab.active{opacity:1;color:var(--text);border-bottom-color:var(--muted-bright);}
+
+/* ── SUB-DASH (sticky below header) ── */
+.sub-dash{
+  background:rgba(17,17,19,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:8px 16px;
+  position:sticky;top:var(--header-h, 90px);z-index:190;
+  display:none; /* shown by JS when a content mode is active */
+}
+.sub-dash.visible{display:block;}
+.sub-dash-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;gap:8px;align-items:center;flex-wrap:nowrap;
+}
+/* view toggle inside sub-dash */
+.view-toggle{display:flex;gap:6px;flex-shrink:0;}
+.view-btn{
+  padding:8px 12px;cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;
+  color:var(--text);opacity:.55;border:1px solid var(--border2);
+  background:var(--surface2);border-radius:8px;transition:all .15s;text-align:center;white-space:nowrap;
+}
+.view-btn:hover{opacity:.85;}
 .view-btn.active{background:var(--surface3);color:var(--gold);opacity:1;border-color:var(--gold);}
 
-/* CONTROLS */
-.controls{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;position:sticky;top:0;z-index:100;}
+/* sub-dash separator */
+.sub-dash-sep{width:1px;background:var(--border2);height:28px;flex-shrink:0;margin:0 2px;}
+
+/* sub-dash selects */
+.sub-dash-selects{display:flex;gap:6px;flex:1;min-width:0;}
+.sub-ctrl{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+.sub-ctrl-label{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.13em;color:var(--muted);text-transform:uppercase;text-align:center;}
+
+/* sub-dash right actions */
+.sub-dash-actions{display:flex;gap:6px;flex-shrink:0;margin-left:auto;}
+.sub-action-btn{
+  padding:8px 12px;cursor:pointer;
+  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;
+  color:var(--text);opacity:.7;border:1px solid var(--border2);
+  background:var(--surface2);border-radius:8px;transition:all .15s;white-space:nowrap;
+  display:flex;align-items:center;gap:5px;
+}
+.sub-action-btn:hover{opacity:1;border-color:var(--gold);color:var(--gold);}
+.sub-action-btn.muted{opacity:.4;}
+
+/* CONTROLS (legacy — tuning/frets row, kept for fretboard/piano extras) */
+.controls{background:transparent;border-bottom:none;padding:0;}
 .controls-inner{max-width:1100px;margin:0 auto;display:flex;gap:10px;flex-wrap:nowrap;align-items:stretch;}
 .ctrl-group{display:flex;flex-direction:column;gap:4px;flex:1 1 0;min-width:0;}
 .ctrl-label{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.13em;color:var(--text);opacity:.85;text-transform:uppercase;text-align:center;}
+
+/* legacy secondary-btn (kept for any remaining refs) */
+.secondary-btn{flex:1;padding:11px 8px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text);opacity:.65;border:1px solid var(--border2);background:var(--surface2);border-radius:10px;transition:all .15s;white-space:nowrap;text-align:center;}
+.secondary-btn:hover,.secondary-btn:active{opacity:1;border-color:var(--gold);color:var(--gold);}
+.secondary-btn.active{opacity:1;border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
 select{width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:.04em;padding:14px 26px 14px 12px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23f0a500'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:border-color .15s;text-align:center;text-align-last:center;}
 select:focus{border-color:var(--gold);}
 .toggle-row{display:flex;gap:6px;}
@@ -377,28 +465,73 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
   position:fixed;inset:0;z-index:1000;
   background:#0a0a0b;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  gap:18px;padding:40px 24px;
+  gap:16px;
+  padding-left:24px;padding-right:24px;
   padding-top:max(40px,env(safe-area-inset-top));
-  padding-bottom:max(40px,env(safe-area-inset-bottom));
-  transition:opacity .35s ease,visibility .35s ease;
+  padding-bottom:max(44px,env(safe-area-inset-bottom));
+  transition:opacity .4s ease,visibility .4s ease;
   overflow:hidden;
 }
 #splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none;}
-#splash-logo-bg{
+
+/* cycling background art */
+#splash-bg-canvas{
   position:absolute;inset:0;width:100%;height:100%;
-  object-fit:contain;object-position:center;z-index:0;
+  object-fit:cover;object-position:center;z-index:0;
+  transition:opacity 1s ease;
 }
-#splash-btn-row{position:relative;z-index:1;display:flex;gap:12px;width:100%;max-width:380px;}
-#splash-enter-btn,#splash-venmo-link,#splash-refresh-btn{position:relative;z-index:1;}
-#splash-enter-btn,#splash-venmo-link{
+#splash-bg-canvas-next{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;z-index:0;
+  opacity:0;transition:opacity 1s ease;
+}
+/* dark gradient overlay so text stays readable */
+#splash-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(to bottom,rgba(0,0,0,.15) 0%,rgba(0,0,0,.25) 50%,rgba(0,0,0,.75) 100%);
+}
+
+/* title block */
+#splash-title-block{
+  position:relative;z-index:2;
+  text-align:center;margin-bottom:8px;
+}
+#splash-title{
+  font-family:'Cinzel',serif;font-size:clamp(28px,7vw,52px);font-weight:700;
+  color:#fff;letter-spacing:.04em;line-height:1.1;
+  text-shadow:0 2px 24px rgba(0,0,0,.8),0 0 60px rgba(0,0,0,.5);
+}
+#splash-subtitle{
+  font-family:'Space Mono',monospace;font-size:clamp(9px,2vw,11px);
+  letter-spacing:.22em;color:rgba(255,255,255,.55);text-transform:uppercase;
+  margin-top:8px;
+}
+
+/* buttons */
+#splash-btn-row{position:relative;z-index:2;display:flex;gap:12px;width:100%;max-width:360px;}
+#splash-enter-btn,#splash-share-btn{
   flex:1;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
-  font-weight:700;border-radius:8px;padding:14px 16px;cursor:pointer;transition:transform .15s,opacity .15s;
+  font-weight:700;border-radius:8px;padding:15px 16px;cursor:pointer;transition:transform .15s,opacity .15s;
   box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;text-decoration:none;
-  display:flex;align-items:center;justify-content:center;white-space:nowrap;
+  display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;border:none;
 }
-#splash-enter-btn{background:var(--gold);color:#000;border:none;}
-#splash-venmo-link{background:#3d95ce;color:#fff;border:none;}
-#splash-enter-btn:active,#splash-venmo-link:active{transform:scale(.96);opacity:.85;}
+#splash-enter-btn{background:var(--gold);color:#000;}
+#splash-share-btn{background:#5a4fcf;color:#fff;}
+#splash-enter-btn:active,#splash-share-btn:active{transform:scale(.96);opacity:.85;}
+
+/* created-by footer */
+#splash-credit{
+  position:relative;z-index:2;text-align:center;
+}
+#splash-credit-name{
+  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.85);letter-spacing:.04em;
+}
+#splash-version-footer{
+  font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.38);
+  text-align:center;letter-spacing:.04em;line-height:1.6;margin-top:3px;
+}
+
 .about-venmo-btn{
   display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;
   font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;
@@ -413,70 +546,87 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
   background:#e07a30;color:#fff;border:none;text-align:center;text-decoration:none;
 }
 .bug-report-btn:hover,.bug-report-btn:active{transform:scale(.96);opacity:.85;}
-#splash-refresh-btn{
-  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;
-  color:var(--muted);text-decoration:none;border:1px solid rgba(255,255,255,.2);
-  border-radius:8px;padding:7px 14px;background:rgba(0,0,0,.35);backdrop-filter:blur(4px);
-  cursor:pointer;transition:all .15s;
-}
-#splash-refresh-btn:hover,#splash-refresh-btn:active{border-color:var(--gold);color:var(--gold);}
 body.splash-locked{overflow:hidden;height:100vh;}
 </style>
 </head>
 <body class="splash-locked">
+
+<!-- app background art (cycling) -->
+<img id="app-bg-canvas" src="" alt="" aria-hidden="true">
+<img id="app-bg-canvas-next" src="" alt="" aria-hidden="true">
+<div id="app-bg-overlay"></div>
+
+<!-- SPLASH SCREEN -->
 <div id="splash-screen">
-  <img id="splash-logo-bg" src="MV_logo_2.png" alt="Music Theory Visualizer logo">
-  <div id="splash-btn-row">
-    <button id="splash-enter-btn" onclick="dismissSplash()">Enter App</button>
-    <a id="splash-venmo-link" href="https://www.venmo.com/u/IDMNGZ" target="_blank" rel="noopener">💜 Venmo</a>
+  <img id="splash-bg-canvas" src="" alt="" aria-hidden="true">
+  <img id="splash-bg-canvas-next" src="" alt="" aria-hidden="true">
+  <div id="splash-overlay"></div>
+  <div id="splash-title-block">
+    <div id="splash-title">Music Theory<br>Visualizer</div>
+    <div id="splash-subtitle">Scale · Chord · Progression Reference</div>
   </div>
-  <button id="splash-refresh-btn" onclick="forceRefresh()">⟳ Refresh / Resync</button>
-  <div id="splash-version-footer" style="position:relative;z-index:1;font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.45);text-align:center;letter-spacing:.04em;line-height:1.6;"></div>
+  <div id="splash-btn-row">
+    <button id="splash-enter-btn" onclick="dismissSplash()">Enter</button>
+    <button id="splash-share-btn" onclick="shareApp()">📤 Share</button>
+  </div>
+  <div id="splash-credit">
+    <div id="splash-credit-name">Created by Ian Dominguez</div>
+    <div id="splash-version-footer"></div>
+  </div>
 </div>
+
+<!-- HEADER -->
 <header>
   <div class="header-inner">
-    <div class="header-top-row" style="text-align:center;">
-      <h1>Music Theory Visualizer</h1>
-      <div class="app-subtitle">Scale, Tuning &amp; Chord Reference</div>
+    <div class="header-title-strip">
+      <div class="header-app-title">Music Theory <span>Visualizer</span></div>
     </div>
-    <div class="header-divider"></div>
-    <div class="header-secondary-nav">
-      <button class="secondary-btn" onclick="setMode('about')">ABOUT</button>
-      <button class="secondary-btn" onclick="setMode('help')">HOW TO USE</button>
-      <button class="secondary-btn" id="btn-share" onclick="shareApp()" title="Share this app">📤 SHARE</button>
-      <button class="secondary-btn" id="btn-sound" onclick="toggleAudio()" title="Mute / unmute note and chord sound">🔊 SOUND</button>
-      <button class="secondary-btn" id="btn-resync" onclick="forceRefresh()" title="Refresh / Resync the app">⟳ RESYNC</button>
-    </div>
-    <div class="header-divider"></div>
-    <div class="view-toggle">
-      <button class="view-btn active" id="btn-guitar" onclick="setView('guitar')">🎸 GUITAR</button>
-      <button class="view-btn" id="btn-piano" onclick="setView('piano')">🎹 KEYBOARD</button>
-      <button class="view-btn" id="btn-circle" onclick="setView('circle')">⭕ CIRCLE</button>
-    </div>
-    <div class="mode-tabs">
-      <button class="mode-tab active" onclick="setMode('scale')">SCALES</button>
-      <button class="mode-tab" onclick="setMode('chord')">CHORDS</button>
-      <button class="mode-tab" onclick="setMode('prog')">PROGRESSIONS</button>
-    </div>
+    <nav class="main-tab-bar">
+      <button class="mode-tab active" id="tab-scale"  onclick="setMode('scale')">SCALES</button>
+      <button class="mode-tab"        id="tab-chord"  onclick="setMode('chord')">CHORDS</button>
+      <button class="mode-tab"        id="tab-prog"   onclick="setMode('prog')">PROGRESSIONS</button>
+      <div class="tab-bar-sep"></div>
+      <button class="util-tab"        id="tab-help"   onclick="setMode('help')">HOW TO USE</button>
+      <button class="util-tab"        id="tab-system" onclick="setMode('system')">⚙ SYSTEM</button>
+      <button class="util-tab"        id="tab-about"  onclick="setMode('about')">ABOUT</button>
+    </nav>
   </div>
 </header>
 
-<div class="controls">
-  <div class="controls-inner">
-    <div class="ctrl-group">
-      <div class="ctrl-label">Root Note</div>
-      <select id="root-select"></select>
+<!-- SUB-DASH (sticky, shown only for content modes) -->
+<div class="sub-dash" id="sub-dash">
+  <div class="sub-dash-inner">
+    <div class="view-toggle">
+      <button class="view-btn active" id="btn-guitar" onclick="setView('guitar')">🎸 Guitar</button>
+      <button class="view-btn"        id="btn-piano"  onclick="setView('piano')">🎹 Keyboard</button>
+      <button class="view-btn"        id="btn-circle" onclick="setView('circle')">⭕ Circle</button>
     </div>
-    <div class="ctrl-group">
-      <div class="ctrl-label">Scale</div>
-      <select id="scale-select"></select>
+    <div class="sub-dash-sep"></div>
+    <div class="sub-dash-selects">
+      <div class="sub-ctrl">
+        <div class="sub-ctrl-label">Root</div>
+        <select id="root-select"></select>
+      </div>
+      <div class="sub-ctrl">
+        <div class="sub-ctrl-label">Scale</div>
+        <select id="scale-select"></select>
+      </div>
+      <div class="sub-ctrl" id="tuning-group">
+        <div class="sub-ctrl-label">Tuning</div>
+        <select id="tuning-select"></select>
+        <div id="tuning-badge-wrap"></div>
+      </div>
     </div>
-    <div class="ctrl-group" id="tuning-group">
-      <div class="ctrl-label">Tuning</div>
-      <select id="tuning-select"></select>
-      <div id="tuning-badge-wrap"></div>
+    <div class="sub-dash-actions">
+      <button class="sub-action-btn" id="btn-sound" onclick="toggleAudio()" title="Mute / unmute sound">🔊 Sound</button>
+      <button class="sub-action-btn" onclick="shareApp()" title="Share this app">📤 Share</button>
     </div>
   </div>
+</div>
+
+<!-- legacy controls wrapper (empty — selects moved to sub-dash) -->
+<div class="controls" style="display:none">
+  <div class="controls-inner"></div>
 </div>
 
 <main>
@@ -626,6 +776,8 @@ body.splash-locked{overflow:hidden;height:100vh;}
   </div>
   <!-- HELP MODE -->
   <div id="mode-help" style="display:none;padding-top:4px;"></div>
+  <!-- SYSTEM MODE -->
+  <div id="mode-system" style="display:none;padding-top:4px;"></div>
   <!-- ABOUT MODE -->
   <div id="mode-about" style="display:none;padding-top:4px;"></div>
 </main>
@@ -1008,7 +1160,7 @@ function chordPcsToMidi(chordPcs,rootPc,baseMidi=60){
 function toggleAudio(){
   audioEnabled=!audioEnabled;
   const btn=document.getElementById('btn-sound');
-  if(btn)btn.textContent=audioEnabled?'🔊 SOUND':'🔇 SOUND';
+  if(btn)btn.innerHTML=audioEnabled?'🔊 Sound':'🔇 Sound';
   if(audioEnabled)getAudioCtx();
 }
 
@@ -2218,7 +2370,9 @@ function setView(v){
   document.getElementById('btn-guitar').className='view-btn'+(v==='guitar'?' active':'');
   document.getElementById('btn-piano').className='view-btn'+(v==='piano'?' active':'');
   document.getElementById('btn-circle').className='view-btn'+(v==='circle'?' active':'');
-  document.getElementById('tuning-group').style.display=v==='guitar'?'':'none';
+  // tuning group only visible in guitar view (in sub-dash)
+  const tg=document.getElementById('tuning-group');
+  if(tg) tg.style.display=v==='guitar'?'':'none';
   document.getElementById('frets-group').style.display=v==='guitar'?'':'none';
   document.getElementById('octaves-group').style.display=v==='piano'?'':'none';
   render();
@@ -2246,16 +2400,31 @@ function refreshActiveSelection(){
 function setMode(m){
   currentMode=m;
   if(m!=='prog'){ stopProgPlayback(); selectedDegreeIdx=null; }
-  document.querySelectorAll('.mode-tab,.secondary-btn').forEach(t=>t.classList.remove('active'));
-  const activeBtn=document.querySelector(`.mode-tab[onclick="setMode('${m}')"],.secondary-btn[onclick="setMode('${m}')"]`);
-  if(activeBtn) activeBtn.classList.add('active');
-  document.getElementById('mode-scale').style.display=m==='scale'?'':'none';
-  document.getElementById('mode-chord').style.display=m==='chord'?'':'none';
-  document.getElementById('mode-prog').style.display=m==='prog'?'':'none';
-  document.getElementById('mode-help').style.display=m==='help'?'':'none';
-  document.getElementById('mode-about').style.display=m==='about'?'':'none';
+
+  // update tab active states
+  document.querySelectorAll('.mode-tab,.util-tab,.secondary-btn').forEach(t=>t.classList.remove('active'));
+  const tabMap={scale:'tab-scale',chord:'tab-chord',prog:'tab-prog',help:'tab-help',system:'tab-system',about:'tab-about'};
+  const activeTab=document.getElementById(tabMap[m]);
+  if(activeTab) activeTab.classList.add('active');
+
+  // sub-dash: only visible for content modes
+  const contentModes=['scale','chord','prog'];
+  const subDash=document.getElementById('sub-dash');
+  if(subDash) subDash.classList.toggle('visible', contentModes.includes(m));
+
+  // tuning group: only guitar-relevant
+  const tuningGroup=document.getElementById('tuning-group');
+  if(tuningGroup) tuningGroup.style.display=(currentView==='guitar'&&contentModes.includes(m))?'':'none';
+
+  // show/hide mode panels
+  ['scale','chord','prog','help','system','about'].forEach(id=>{
+    const el=document.getElementById('mode-'+id);
+    if(el) el.style.display=m===id?'':'none';
+  });
+
   if(m==='help') buildInstructions();
   if(m==='about') buildAbout();
+  if(m==='system') buildSystem();
   render();
 }
 
@@ -2532,7 +2701,95 @@ document.querySelectorAll('.tog-btn[data-speed]').forEach(btn=>{
 // ════════════════════════════════════════
 populateSelects();
 buildScaleGrid();
-render();
+// show sub-dash for initial content mode
+setMode('scale');
+
+// ════════════════════════════════════════
+// SYSTEM TAB
+// ════════════════════════════════════════
+function buildSystem(){
+  const wrap=document.getElementById('mode-system');
+  if(wrap.dataset.built) return;
+  wrap.dataset.built='1';
+  wrap.innerHTML=`<div style="max-width:760px;margin:0 auto;">
+    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;">System</div>
+    <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Settings &amp; Controls</h2>
+    ${helpSection('Sound',`
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <button class="sub-action-btn" id="system-sound-btn" onclick="toggleAudio()" style="font-size:14px;padding:12px 20px;">
+          ${audioEnabled?'🔊 Sound On':'🔇 Sound Off'}
+        </button>
+        <span style="font-size:13px;color:var(--muted-bright);">Tap any note or chord to hear it played. Toggle sound on/off here or from the sub-bar on any content tab.</span>
+      </div>
+    `)}
+    ${helpSection('App',`
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <button class="bug-report-btn" onclick="forceRefresh()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);">⟳ Refresh / Resync</button>
+        </div>
+        <div style="font-size:13px;color:var(--muted-bright);">Reload the app to pick up any updates. Your settings are not affected.</div>
+      </div>
+    `)}
+    <div style="text-align:center;margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
+      Music Theory Visualizer ${APP_VERSION} — ${APP_VERSION_DATE}<br>
+      © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
+    </div>
+  </div>`;
+  // keep system sound button in sync with main btn-sound
+  const sysBtn=wrap.querySelector('#system-sound-btn');
+  if(sysBtn) sysBtn.addEventListener('click',()=>{
+    sysBtn.innerHTML=audioEnabled?'🔊 Sound On':'🔇 Sound Off';
+  });
+}
+
+// ════════════════════════════════════════
+// BACKGROUND CYCLING
+// ════════════════════════════════════════
+(function(){
+  // Images go in images/landing/ and images/backgrounds/
+  // Add filenames here as you drop art into each folder.
+  const LANDING_IMAGES=[];   // e.g. 'images/landing/art1.jpg'
+  const BG_IMAGES=[];        // e.g. 'images/backgrounds/bg1.jpg'
+
+  function cycleImages(imgA, imgB, list, intervalMs){
+    if(!list||list.length===0) return;
+    let idx=Math.floor(Math.random()*list.length);
+    imgA.src=list[idx];
+    imgA.style.opacity='1';
+    if(list.length<2) return;
+    setInterval(()=>{
+      idx=(idx+1)%list.length;
+      imgB.src=list[idx];
+      imgB.style.opacity='1';
+      imgA.style.opacity='0';
+      setTimeout(()=>{
+        imgA.src=imgB.src;
+        imgA.style.opacity='1';
+        imgB.style.opacity='0';
+      },1200);
+    },intervalMs);
+  }
+
+  // splash background
+  const splashA=document.getElementById('splash-bg-canvas');
+  const splashB=document.getElementById('splash-bg-canvas-next');
+  if(splashA&&splashB) cycleImages(splashA,splashB,LANDING_IMAGES,8000);
+
+  // app background
+  const appA=document.getElementById('app-bg-canvas');
+  const appB=document.getElementById('app-bg-canvas-next');
+  if(appA&&appB) cycleImages(appA,appB,BG_IMAGES,12000);
+})();
+
+// measure header height for sub-dash top offset
+(function(){
+  function updateHeaderHeight(){
+    const h=document.querySelector('header');
+    if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight+'px');
+  }
+  updateHeaderHeight();
+  window.addEventListener('resize',updateHeaderHeight);
+})();
 </script>
 </body>
 </html>
