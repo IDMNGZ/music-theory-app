@@ -157,7 +157,7 @@ header{
 /* tab bar: scrollable strip on small screens so tabs never overflow the page */
 @media(max-width:767px){
   .main-tab-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:12px;}
-  .mode-tab{flex:0 0 auto;}
+  .mode-tab{flex:0 0 112px;min-width:112px;text-align:center;}
   .util-tab{flex:0 0 auto;}
 }
 
@@ -480,12 +480,14 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* ── Landscape phone: short viewport → fixed LEFT SIDEBAR ── */
 @media(orientation:landscape) and (max-height:500px){
-  /* Header becomes a fixed left sidebar, offset by safe-area to clear camera */
+  /* Header becomes a fixed left sidebar; padding-left clears camera notch */
   header{
-    position:fixed;top:0;left:env(safe-area-inset-left,0px);bottom:0;
-    width:130px;
+    position:fixed;top:0;left:0;bottom:0;
+    width:calc(130px + env(safe-area-inset-left,0px));
+    padding-left:env(safe-area-inset-left,0px);
     border-bottom:none;border-right:1px solid var(--border);
-    padding:0;overflow-y:auto;overflow-x:hidden;
+    padding-top:0;padding-right:0;padding-bottom:0;
+    overflow-y:auto;overflow-x:hidden;
     z-index:200;
   }
   .header-inner{flex-direction:column;height:100%;gap:0;}
@@ -510,8 +512,8 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
   /* Sub-dash sits at the very top of the shifted content area */
   .sub-dash{top:0;}
 
-  /* Tighten main content for short screens */
-  main{padding:8px 12px 30px;}
+  /* Tighten main content for short screens, respect right safe area */
+  main{padding:8px max(12px,env(safe-area-inset-right,12px)) 30px 12px;}
   .eyebrow{display:none;}
   .prog-degree{padding:5px 6px;}
   .prog-numeral{font-size:13px;}
@@ -724,7 +726,7 @@ body.splash-locked{overflow:hidden;height:100vh;}
         <svg id="circle-svg-scale" viewBox="0 0 360 360" style="width:100%;max-width:380px;height:auto;display:block;margin:0 auto;"></svg>
       </div>
     </div>
-    <div id="staff-view-scale" style="display:none">
+    <div id="staff-view-scale" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
       <div class="piano-sub-label">Staff notation</div>
       <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px">
         <svg id="staff-svg-scale" xmlns="http://www.w3.org/2000/svg" style="display:block;min-width:200px;"></svg>
@@ -762,7 +764,7 @@ body.splash-locked{overflow:hidden;height:100vh;}
           <svg id="chord-mode-circle-svg" viewBox="0 0 360 360" style="width:100%;max-width:380px;height:auto;display:block;margin:0 auto;"></svg>
         </div>
       </div>
-      <div id="staff-view-chord" style="display:none">
+      <div id="staff-view-chord" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
         <div class="piano-sub-label">Staff notation</div>
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px">
           <svg id="staff-svg-chord" xmlns="http://www.w3.org/2000/svg" style="display:block;min-width:200px;"></svg>
@@ -845,7 +847,7 @@ body.splash-locked{overflow:hidden;height:100vh;}
           <svg id="prog-circle-svg" viewBox="0 0 400 400" style="width:100%;max-width:380px;height:auto;display:block;margin:0 auto;"></svg>
         </div>
       </div>
-      <div id="prog-staff-viz" style="display:none">
+      <div id="prog-staff-viz" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;">
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px">
           <svg id="prog-staff-svg" xmlns="http://www.w3.org/2000/svg" style="display:block;min-width:200px;"></svg>
         </div>
@@ -2668,7 +2670,7 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v2.9';
+const APP_VERSION = 'v3.0';
 const APP_VERSION_DATE = 'August 5, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){
@@ -2768,18 +2770,6 @@ function buildInstructions(){
         ${[[0,'#f0a500','R Root'],[2,'#60b8d0','2'],[3,'#7dc85a','♭3'],[4,'#a0c860','3'],[5,'#8b7fe8','4'],[6,'#e07a30','♭5 blue note'],[7,'#50c8a0','5'],[9,'#60a8d0','6'],[10,'#e0c040','♭7'],[11,'#c07040','7'],[1,'#e05a6a','♭2'],[8,'#d060b8','♭6']].map(([,c,l])=>`<span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:10px;height:10px;border-radius:50%;background:${c};display:inline-block;flex-shrink:0"></span>${l}</span>`).join('')}
       </div>
     `)}
-    <div style="background:rgba(240,165,0,.08);border:1px solid var(--gold);border-radius:12px;padding:18px;margin-bottom:12px;">
-      <div style="font-size:15px;font-weight:700;color:var(--gold);margin-bottom:10px;">📲 Save as iPhone Home Screen App</div>
-      <div style="font-size:13px;color:var(--text);opacity:.9;line-height:1.7;">
-        ${helpList([
-          'Open this app in <b>Safari</b>.',
-          'Tap the <b>Share</b> button (the ↑ box icon).',
-          'Tap <b>"Add to Home Screen"</b>.',
-        ])}
-        Launches fullscreen, works fully offline. No internet needed after the first load. If the app ever seems stuck on an old version after an update, tap <b>⟳ RESYNC</b> in the header.
-      </div>
-    </div>
-    ${bugReportSection()}
   </div>`;
 
   // Render live sample visuals
@@ -2957,31 +2947,55 @@ setMode('scale');
 // ════════════════════════════════════════
 function buildSystem(){
   const wrap=document.getElementById('mode-system');
-  // rebuild every open so button label reflects current audio state
+  // rebuild every open so sound button label reflects current audioEnabled state
+  const cardStyle='background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px;';
+  const labelStyle='font-family:"Space Mono",monospace;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted-bright);text-transform:uppercase;';
+  const descStyle='font-size:13px;color:var(--muted-bright);line-height:1.5;flex:1;';
+  const btnBase='display:inline-flex;align-items:center;gap:8px;border:none;border-radius:8px;font-size:14px;font-weight:600;padding:11px 20px;cursor:pointer;align-self:flex-start;white-space:nowrap;';
+  const soundColor=audioEnabled?'background:#1a6b3a;color:#7fffc4;':'background:#5a1a1a;color:#ffaaaa;';
+  const shareColor='background:#1a3a6b;color:#aaccff;';
+  const refreshColor='background:#3a2a0a;color:#f0c060;';
+  const homeColor='background:#3a1a5a;color:#dfaaff;';
+  const contactColor='background:#1a4a4a;color:#aaffee;';
   wrap.innerHTML=`<div style="max-width:1100px;margin:0 auto;">
     <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;">System</div>
     <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Settings &amp; Controls</h2>
-    ${helpSection('Sound',`
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-        <button class="sound-toggle-btn bug-report-btn" onclick="toggleAudio()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;padding:12px 20px;margin-top:0;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;align-items:start;">
+      <div style="${cardStyle}">
+        <div style="${labelStyle}">🔊 Sound</div>
+        <div style="${descStyle}">Tap any note or chord to hear it played.</div>
+        <button onclick="toggleAudio()" style="${btnBase}${soundColor}" class="sound-toggle-btn">
           ${audioEnabled?'🔊 Sound On':'🔇 Sound Off'}
         </button>
-        <span style="font-size:13px;color:var(--muted-bright);">Tap any note or chord to hear it played.</span>
       </div>
-    `)}
-    ${helpSection('Share',`
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-        <button class="bug-report-btn" onclick="shareApp()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-size:14px;padding:12px 20px;margin-top:0;">📤 Share This App</button>
-        <span style="font-size:13px;color:var(--muted-bright);">Share a link to this app with friends.</span>
+      <div style="${cardStyle}">
+        <div style="${labelStyle}">Share</div>
+        <div style="${descStyle}">Share a link to this app with a friend.</div>
+        <button onclick="shareApp()" style="${btnBase}${shareColor}">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><circle cx="16" cy="3" r="2.5"/><circle cx="16" cy="17" r="2.5"/><circle cx="4" cy="10" r="2.5"/><line x1="6.1" y1="9.1" x2="13.9" y2="4.2" stroke="currentColor" stroke-width="1.8"/><line x1="6.1" y1="10.9" x2="13.9" y2="15.8" stroke="currentColor" stroke-width="1.8"/></svg>
+          Share App
+        </button>
       </div>
-    `)}
-    ${helpSection('App',`
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        <button class="bug-report-btn" onclick="forceRefresh()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);margin-top:0;align-self:flex-start;">⟳ Refresh / Resync</button>
-        <div style="font-size:13px;color:var(--muted-bright);">Reload the app to pick up any updates.</div>
+      <div style="${cardStyle}">
+        <div style="${labelStyle}">⟳ Refresh</div>
+        <div style="${descStyle}">Clear cache and reload to pick up the latest update.</div>
+        <button onclick="forceRefresh()" style="${btnBase}${refreshColor}">⟳ Refresh / Resync</button>
       </div>
-    `)}
-    <div style="text-align:center;margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
+      <div style="${cardStyle}">
+        <div style="${labelStyle}">📲 Home Screen</div>
+        <div style="${descStyle}">On iPhone: tap Share then "Add to Home Screen" to install this app.</div>
+        <button onclick="shareApp()" style="${btnBase}${homeColor}">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><circle cx="16" cy="3" r="2.5"/><circle cx="16" cy="17" r="2.5"/><circle cx="4" cy="10" r="2.5"/><line x1="6.1" y1="9.1" x2="13.9" y2="4.2" stroke="currentColor" stroke-width="1.8"/><line x1="6.1" y1="10.9" x2="13.9" y2="15.8" stroke="currentColor" stroke-width="1.8"/></svg>
+          Open Share Sheet
+        </button>
+      </div>
+      <div style="${cardStyle}">
+        <div style="${labelStyle}">✉ Contact</div>
+        <div style="${descStyle}">Found a bug or have a suggestion? Send a message.</div>
+        <a href="mailto:${BUG_REPORT_EMAIL}?subject=Music Theory Visualizer Feedback" style="${btnBase}${contactColor};text-decoration:none;">✉ Send Feedback</a>
+      </div>
+    </div>
+    <div style="text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
       Music Theory Visualizer ${APP_VERSION}<br>
       © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
     </div>
