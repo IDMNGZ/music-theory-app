@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Music Theory Visualizer">
@@ -17,6 +17,7 @@
   --gold:#f0a500;--gold-dim:rgba(240,165,0,0.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+html{overflow-x:hidden;}
 body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden;}
 /* iOS standalone web app — account for status bar */
 @media all and (display-mode:standalone){
@@ -133,6 +134,12 @@ header{
 .sub-dash-actions{display:none;}
 .sub-action-btn{display:none;}
 
+/* Stabilize sub-dash height: root/scale sub-ctrls reserve the same vertical
+   space as the tuning-badge row so the sub-dash never jumps height */
+.sub-ctrl:not(#tuning-group)::after{
+  content:'';display:block;min-height:22px;
+}
+
 /* mobile sub-dash: wrap to 2 rows so nothing overflows */
 @media(max-width:600px){
   .sub-dash{padding:6px 10px;}
@@ -143,6 +150,15 @@ header{
   .sub-dash-selects{flex:0 0 100%;}
   .sub-ctrl-label{display:none;}
   .sub-ctrl select{min-height:36px;}
+  /* sub-dash height stabilizer not needed on mobile (2-row layout) */
+  .sub-ctrl:not(#tuning-group)::after{display:none;}
+}
+
+/* tab bar: scrollable strip on small screens so tabs never overflow the page */
+@media(max-width:767px){
+  .main-tab-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:12px;}
+  .mode-tab{flex:0 0 auto;}
+  .util-tab{flex:0 0 auto;}
 }
 
 /* CONTROLS (legacy — tuning/frets row, kept for fretboard/piano extras) */
@@ -462,16 +478,43 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
   .prog-chord-name{font-size:9px;}
 }
 
-/* ── Landscape phone ── */
-@media(max-width:812px) and (orientation:landscape){
-  header{padding-left:16px;padding-right:16px;padding-bottom:6px;padding-top:max(10px, env(safe-area-inset-top));}
-  h1{font-size:16px;}
+/* ── Landscape phone: short viewport → fixed LEFT SIDEBAR ── */
+@media(orientation:landscape) and (max-height:500px){
+  /* Header becomes a fixed left sidebar */
+  header{
+    position:fixed;top:0;left:0;bottom:0;width:130px;
+    border-bottom:none;border-right:1px solid var(--border);
+    padding:0;overflow-y:auto;overflow-x:hidden;
+    z-index:200;
+  }
+  .header-inner{flex-direction:column;height:100%;gap:0;}
+  .header-title-strip{
+    padding:12px 8px;border-bottom:1px solid var(--border);
+  }
+  .header-app-title{font-size:12px;text-align:center;letter-spacing:.03em;}
+  .main-tab-bar{
+    flex-direction:column;gap:4px;padding:8px 6px;
+    border-top:none;overflow-y:auto;flex:1;
+  }
+  .mode-tab{flex:0 0 auto;font-size:10px;padding:9px 8px;text-align:left;white-space:normal;}
+  .util-tab{font-size:9px;padding:8px 8px;text-align:left;white-space:normal;}
+  .tab-bar-sep{width:100%;height:1px;margin:2px 0;}
+
+  /* Shift all body content right to clear the sidebar */
+  body{padding-left:130px;}
+
+  /* Sub-dash sits at the very top of the shifted content area */
+  .sub-dash{top:0;}
+
+  /* Tighten main content for short screens */
+  main{padding:8px 12px 30px;}
   .eyebrow{display:none;}
-  .controls{padding:6px 16px;}
-  main{padding:10px 16px 40px;}
   .prog-degree{padding:5px 6px;}
   .prog-numeral{font-size:13px;}
   .fn-legend{display:none;}
+
+  /* Tab bar already in column, no horizontal scroll needed */
+  .main-tab-bar{overflow-x:visible;}
 }
 
 /* ── SPLASH SCREEN ── */
@@ -493,7 +536,7 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* title */
 #splash-title{
-  font-family:'BlackFlag','Cinzel',serif;font-size:clamp(38px,16vw,72px);font-weight:400;
+  font-family:'BlackFlag','Cinzel',serif;font-size:clamp(26px,10vw,62px);font-weight:400;
   line-height:1.15;margin:0 0 28px;letter-spacing:.5px;
   text-shadow:0 3px 0 rgba(0,0,0,.55),0 6px 10px rgba(0,0,0,.75),0 2px 24px rgba(0,0,0,.65);
   max-width:100%;word-break:break-word;
@@ -2429,7 +2472,7 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v2.4';
+const APP_VERSION = 'v2.5';
 const APP_VERSION_DATE = 'August 4, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){
@@ -2785,7 +2828,9 @@ function buildSystem(){
 (function(){
   function updateHeaderHeight(){
     const h=document.querySelector('header');
-    if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight+'px');
+    if(!h) return;
+    const isLandscapeSidebar=window.matchMedia('(orientation:landscape) and (max-height:500px)').matches;
+    document.documentElement.style.setProperty('--header-h', isLandscapeSidebar ? '0px' : h.offsetHeight+'px');
   }
   updateHeaderHeight();
   window.addEventListener('resize',updateHeaderHeight);
