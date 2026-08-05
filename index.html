@@ -105,10 +105,13 @@ header{
 /* sub-dash: all controls share one height */
 .sub-dash-inner{align-items:stretch;}
 
-/* view toggle — equal-width buttons filling their group */
-.view-toggle{display:flex;gap:6px;flex:0 0 auto;}
+/* view toggle — 3 equal-width equal-height buttons */
+.view-toggle{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  flex:0 0 auto;align-self:stretch;
+}
 .view-btn{
-  flex:1;padding:0 10px;cursor:pointer;min-width:80px;
+  padding:0 10px;cursor:pointer;min-width:72px;min-height:40px;
   font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;
   color:var(--text);opacity:.6;border:1px solid var(--border2);
   background:var(--surface2);border-radius:8px;transition:all .15s;
@@ -129,6 +132,18 @@ header{
 /* sub-dash actions removed — Sound/Share live in System tab */
 .sub-dash-actions{display:none;}
 .sub-action-btn{display:none;}
+
+/* mobile sub-dash: wrap to 2 rows so nothing overflows */
+@media(max-width:600px){
+  .sub-dash{padding:6px 10px;}
+  .sub-dash-inner{flex-wrap:wrap;gap:6px;}
+  .view-toggle{flex:0 0 100%;display:grid;grid-template-columns:repeat(3,1fr);}
+  .view-btn{min-width:0;min-height:38px;font-size:10px;padding:0 6px;}
+  .sub-dash-sep{display:none;}
+  .sub-dash-selects{flex:0 0 100%;}
+  .sub-ctrl-label{display:none;}
+  .sub-ctrl select{min-height:36px;}
+}
 
 /* CONTROLS (legacy — tuning/frets row, kept for fretboard/piano extras) */
 .controls{background:transparent;border-bottom:none;padding:0;}
@@ -478,9 +493,10 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* title */
 #splash-title{
-  font-family:'BlackFlag','Cinzel',serif;font-size:72px;font-weight:400;
+  font-family:'BlackFlag','Cinzel',serif;font-size:clamp(38px,16vw,72px);font-weight:400;
   line-height:1.15;margin:0 0 28px;letter-spacing:.5px;
   text-shadow:0 3px 0 rgba(0,0,0,.55),0 6px 10px rgba(0,0,0,.75),0 2px 24px rgba(0,0,0,.65);
+  max-width:100%;word-break:break-word;
 }
 
 /* buttons */
@@ -513,11 +529,13 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 }
 #splash-credit-name{
   font-size:19px;font-weight:700;color:rgba(242,239,230,.9);
-  white-space:nowrap;text-shadow:0 1px 8px rgba(0,0,0,.65);
+  text-shadow:0 1px 8px rgba(0,0,0,.65);
+  max-width:calc(100vw - 48px);text-align:center;
 }
 #splash-version-footer{
   font-size:12px;line-height:1.8;color:rgba(242,239,230,.55);
-  white-space:nowrap;font-family:'Space Mono',monospace;
+  font-family:'Space Mono',monospace;
+  max-width:calc(100vw - 48px);text-align:center;
 }
 
 /* on wide viewports, portrait art looks better contained (matches MTG approach) */
@@ -2411,7 +2429,7 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v2.1';
+const APP_VERSION = 'v2.4';
 const APP_VERSION_DATE = 'August 4, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){

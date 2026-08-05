@@ -3,7 +3,7 @@
 **This is a living document.** Read it at the start of any new session working on this
 app, and update it whenever a notable feature, convention, or decision changes.
 
-Repo: `github.com/IDMNGZ/MUSIC` · Live: `idmngz.github.io/MUSIC/` ·
+Repo: `github.com/IDMNGZ/music-theory-app` · Live: `idmngz.github.io/music-theory-app/` ·
 Local: `X:\APP_projects\music-theory-app`
 
 For UI/UX design patterns and collaboration style, see the MTG Deck Builder handoff docs
@@ -58,7 +58,7 @@ Fonts: Space Grotesk (body), Space Mono (labels/mono)
 ## Version
 
 `APP_VERSION` and `APP_VERSION_DATE` constants near bottom of `index.html` JS section.
-Current: v2.0 (June 23, 2026). Bump with every push.
+Current: v2.4 (August 4, 2026). Bump with every push.
 
 ## Conventions
 
