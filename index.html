@@ -219,7 +219,7 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* CHORD SECTION */
 .chord-section{margin-top:20px;}
-.section-header{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.section-header{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted-bright);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
 .section-header::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* CHORD TYPE TABS */
@@ -291,7 +291,7 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* function legend */
 .fn-legend{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
-.fn-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+.fn-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted-bright);}
 .fn-dot{width:10px;height:10px;border-radius:50%;}
 
 /* progression list */
@@ -480,9 +480,10 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 
 /* ── Landscape phone: short viewport → fixed LEFT SIDEBAR ── */
 @media(orientation:landscape) and (max-height:500px){
-  /* Header becomes a fixed left sidebar */
+  /* Header becomes a fixed left sidebar, offset by safe-area to clear camera */
   header{
-    position:fixed;top:0;left:0;bottom:0;width:130px;
+    position:fixed;top:0;left:env(safe-area-inset-left,0px);bottom:0;
+    width:130px;
     border-bottom:none;border-right:1px solid var(--border);
     padding:0;overflow-y:auto;overflow-x:hidden;
     z-index:200;
@@ -503,8 +504,8 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
   .util-tab{opacity:.8;}
   .tab-bar-sep{width:100%;height:1px;margin:3px 0;}
 
-  /* Shift all body content right to clear the sidebar */
-  body{padding-left:130px;}
+  /* Shift all body content right to clear the sidebar + safe area */
+  body{padding-left:calc(130px + env(safe-area-inset-left,0px));}
 
   /* Sub-dash sits at the very top of the shifted content area */
   .sub-dash{top:0;}
@@ -801,7 +802,7 @@ body.splash-locked{overflow:hidden;height:100vh;}
   <div id="mode-prog" style="display:none">
     <!-- Diatonic chord strip -->
     <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;" id="prog-key-label"></div>
+      <div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--muted-bright);text-transform:uppercase;" id="prog-key-label"></div>
       <div class="fn-legend">
         <div class="fn-legend-item"><div class="fn-dot" style="background:#50c8a0"></div>Tonic (T) — rest &amp; home</div>
         <div class="fn-legend-item"><div class="fn-dot" style="background:#8b7fe8"></div>Subdominant (SD) — movement</div>
@@ -2014,12 +2015,13 @@ function drawStaffSvg(svgId,midis,isScale,rootPc){
   const bg   =st.getPropertyValue('--bg').trim()||'#0a0a0b';
 
   const CLEF_W=54,PAD_L=8,PAD_R=20,VIEW_H=160;
-  const NOTE_SP=isScale?52:70;
-  const totalW=PAD_L+CLEF_W+(isScale?midis.length*NOTE_SP:NOTE_SP)+PAD_R;
+  const NOTE_SP=70;
+  let totalW=PAD_L+CLEF_W+(isScale?midis.length*NOTE_SP:NOTE_SP)+PAD_R;
+  if(!isScale) totalW=Math.max(totalW,500);
 
   svg.setAttribute('viewBox',`0 0 ${totalW} ${VIEW_H}`);
-  svg.setAttribute('preserveAspectRatio','xMinYMid meet');
-  svg.style.cssText=`display:block;width:${Math.min(totalW,800)}px;max-width:100%;height:auto;`;
+  svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  svg.style.cssText=`display:block;width:100%;max-width:900px;height:auto;margin:0 auto;`;
 
   function sln(x1,y1,x2,y2,attrs){
     const e=document.createElementNS(NS,'line');
@@ -2095,8 +2097,8 @@ function drawStaffSvg(svgId,midis,isScale,rootPc){
     const endX=barX+18+(midis.length-1)*NOTE_SP+22;
     sln(endX,STAFF_LINE_YS[0],endX,STAFF_LINE_YS[4],{stroke:col,'stroke-width':'1.3',opacity:'0.5'});
   } else {
-    // Chord: stacked whole notes at same x
-    const cx=barX+26;
+    // Chord: stacked whole notes, horizontally centered in the viewBox
+    const cx=barX+Math.floor((totalW-barX-40)/2);
     midis.forEach(midi=>drawNote(cx,midi,true));
     // Note labels to the right, at each note's y
     [...midis].sort((a,b)=>a-b).forEach(midi=>{
@@ -2666,7 +2668,7 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v2.8';
+const APP_VERSION = 'v2.9';
 const APP_VERSION_DATE = 'August 5, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){
@@ -2701,7 +2703,7 @@ function buildInstructions(){
   const wrap = document.getElementById('mode-help');
   if(wrap.dataset.built) return;
   wrap.dataset.built = '1';
-  wrap.innerHTML = `<div style="max-width:700px;margin:0 auto;">
+  wrap.innerHTML = `<div style="max-width:1100px;margin:0 auto;">
     <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;">How to use</div>
     <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Music Theory Visualizer</h2>
     ${helpSection('Header Layout', helpList([
@@ -2798,12 +2800,16 @@ function buildAbout(){
   const wrap = document.getElementById('mode-about');
   if(wrap.dataset.built) return;
   wrap.dataset.built = '1';
-  wrap.innerHTML = `<div style="max-width:760px;margin:0 auto;">
+  const aboutCard=(title,body)=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;height:100%;box-sizing:border-box;">
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;">${title}</div>
+    <div style="font-size:13px;color:var(--text);opacity:.8;line-height:1.7;">${body}</div>
+  </div>`;
+  wrap.innerHTML = `<div style="max-width:1100px;margin:0 auto;">
     <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;">About</div>
     <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Created by Ian Dominguez</h2>
     ${helpSection('Bio',`
-      <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;">
-        <img src="images/about/IanD_BioPic.JPG" alt="Ian Dominguez" style="flex:0 0 auto;display:block;width:140px;height:140px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);" onerror="this.style.display='none'">
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+        <img src="images/about/IanD_BioPic.JPG" alt="Ian Dominguez" style="flex:0 0 auto;display:block;width:175px;height:175px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);" onerror="this.style.display='none'">
         <div style="flex:1 1 280px;min-width:0;">
           I am a principal game designer, indie writer, indie artist, and self-taught amateur musician (both Guitar and Keyboard)
           <br><br>
@@ -2812,25 +2818,27 @@ function buildAbout(){
           Use this app to quickly visualize the mystery of music theory, special tunings, unique scales, every chord, and how it works across music progressions.
           <br><br>
           If you like this app, please consider donating to my Venmo.
-          <br><br>
           Thank you very much, and Enjoy!
         </div>
       </div>
     `)}
-    ${helpSection('Links',`
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <a href="https://www.iandominguez.com" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">🌐 iandominguez.com</a>
-        <a href="https://www.instagram.com/idmngz.me" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">📷 @idmngz.me</a>
-        <a href="https://www.instagram.com/roguetheorystudio" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">📷 @roguetheorystudio</a>
-      </div>
-    `)}
-    ${helpSection('Support This App',`
-      If you enjoy using this app, I would really appreciate a donation on Venmo.<br><br>
-      All donations will help to support my studio endeavors, and allows me to design, build, and maintain cool apps like this one.<br><br>
-      Thank you very much.<br>
-      <a href="https://www.venmo.com/u/IDMNGZ" target="_blank" rel="noopener" class="about-venmo-btn">💜 DONATE</a>
-    `)}
-    ${bugReportSection()}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;align-items:start;">
+      ${aboutCard('Links',`
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <a href="https://www.iandominguez.com" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">🌐 iandominguez.com</a>
+          <a href="https://www.instagram.com/idmngz.me" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">📷 @idmngz.me</a>
+          <a href="https://www.instagram.com/roguetheorystudio" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">📷 @roguetheorystudio</a>
+        </div>
+      `)}
+      ${aboutCard('Support This App',`
+        If you enjoy using this app, consider supporting future updates with a donation. Thank you!<br><br>
+        <a href="https://www.venmo.com/u/IDMNGZ" target="_blank" rel="noopener" class="about-venmo-btn">💜 Donate</a>
+      `)}
+      ${aboutCard('Found a Bug? Have a Suggestion?',`
+        If something in the app is broken, inaccurate, or confusing — or you just have an idea — let me know.<br><br>
+        <a class="bug-report-btn" href="mailto:${BUG_REPORT_EMAIL}?subject=Music%20Theory%20Visualizer%20Feedback">Contact</a>
+      `)}
+    </div>
     <div style="text-align:center;margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
       Music Theory Visualizer ${APP_VERSION}<br>
       © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
@@ -2950,7 +2958,7 @@ setMode('scale');
 function buildSystem(){
   const wrap=document.getElementById('mode-system');
   // rebuild every open so button label reflects current audio state
-  wrap.innerHTML=`<div style="max-width:760px;margin:0 auto;">
+  wrap.innerHTML=`<div style="max-width:1100px;margin:0 auto;">
     <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;">System</div>
     <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Settings &amp; Controls</h2>
     ${helpSection('Sound',`
