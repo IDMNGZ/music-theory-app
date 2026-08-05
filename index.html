@@ -65,21 +65,21 @@ header{
   padding:8px 12px 10px;
   border-top:1px solid var(--border);
 }
-/* primary tabs: Scales / Chords / Progressions */
+/* primary tabs: Scales / Chords / Progressions — gold-tinted group */
 .mode-tab{
   flex:1;padding:11px 8px;cursor:pointer;
   font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;
-  color:var(--text);opacity:.7;
-  background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
+  color:var(--gold);opacity:.85;
+  background:rgba(240,165,0,.07);border:1px solid rgba(240,165,0,.22);border-radius:8px;
   transition:all .15s;white-space:nowrap;text-align:center;
 }
-.mode-tab:hover{opacity:1;border-color:var(--gold);color:var(--gold);}
+.mode-tab:hover{opacity:1;border-color:var(--gold);}
 .mode-tab.active{opacity:1;color:#000;background:var(--gold);border-color:var(--gold);box-shadow:0 2px 12px rgba(240,165,0,.3);}
 
 /* separator between primary and utility tabs */
 .tab-bar-sep{width:1px;background:var(--border2);height:28px;flex-shrink:0;margin:0 2px;}
 
-/* utility tabs: How To Use / System / About */
+/* utility tabs: How To Use / System / About — neutral group */
 .util-tab{
   padding:11px 10px;cursor:pointer;
   font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;
@@ -496,14 +496,11 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
     flex-direction:column;gap:4px;padding:8px 6px;
     border-top:none;overflow-y:auto;flex:1;
   }
-  /* uniform size — same padding/font for all sidebar buttons */
-  .mode-tab, .util-tab{flex:0 0 auto;font-size:10px;padding:9px 8px;text-align:left;white-space:normal;width:100%;}
-  /* color group: primary tabs → gold tint */
-  .mode-tab{background:rgba(240,165,0,.08);border-color:rgba(240,165,0,.25);color:var(--gold);opacity:1;}
-  .mode-tab.active{background:var(--gold);border-color:var(--gold);color:#000;opacity:1;}
-  /* color group: utility tabs → neutral */
-  .util-tab{background:var(--surface);border-color:var(--border);color:var(--muted-bright);opacity:.8;}
-  .util-tab.active{background:var(--surface2);border-color:var(--border2);color:var(--text);opacity:1;}
+  /* uniform size + centered text for all sidebar buttons */
+  .mode-tab, .util-tab{flex:0 0 auto;font-size:10px;padding:9px 8px;text-align:center;white-space:normal;width:100%;}
+  /* active states keep opacity:1 in sidebar */
+  .mode-tab{opacity:1;}
+  .util-tab{opacity:.8;}
   .tab-bar-sep{width:100%;height:1px;margin:3px 0;}
 
   /* Shift all body content right to clear the sidebar */
@@ -2486,7 +2483,7 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v2.6';
+const APP_VERSION = 'v2.7';
 const APP_VERSION_DATE = 'August 4, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){
