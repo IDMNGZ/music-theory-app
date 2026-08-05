@@ -106,9 +106,9 @@ header{
 /* sub-dash: all controls share one height */
 .sub-dash-inner{align-items:stretch;}
 
-/* view toggle — 3 equal-width equal-height buttons */
+/* view toggle — 4 equal-width equal-height buttons */
 .view-toggle{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
   flex:0 0 auto;align-self:stretch;
 }
 .view-btn{
@@ -144,7 +144,7 @@ header{
 @media(max-width:600px){
   .sub-dash{padding:6px 10px;}
   .sub-dash-inner{flex-wrap:wrap;gap:6px;}
-  .view-toggle{flex:0 0 100%;display:grid;grid-template-columns:repeat(3,1fr);}
+  .view-toggle{flex:0 0 100%;display:grid;grid-template-columns:repeat(4,1fr);}
   .view-btn{min-width:0;min-height:38px;font-size:10px;padding:0 6px;}
   .sub-dash-sep{display:none;}
   .sub-dash-selects{flex:0 0 100%;}
@@ -657,6 +657,7 @@ body.splash-locked{overflow:hidden;height:100vh;}
       <button class="view-btn active" id="btn-guitar" onclick="setView('guitar')">🎸 Guitar</button>
       <button class="view-btn"        id="btn-piano"  onclick="setView('piano')">🎹 Keyboard</button>
       <button class="view-btn"        id="btn-circle" onclick="setView('circle')">⭕ Circle</button>
+      <button class="view-btn"        id="btn-staff"  onclick="setView('staff')">📄 Staff</button>
     </div>
     <div class="sub-dash-sep"></div>
     <div class="sub-dash-selects">
@@ -722,6 +723,16 @@ body.splash-locked{overflow:hidden;height:100vh;}
         <svg id="circle-svg-scale" viewBox="0 0 360 360" style="width:100%;max-width:380px;height:auto;display:block;margin:0 auto;"></svg>
       </div>
     </div>
+    <div id="staff-view-scale" style="display:none">
+      <div class="piano-sub-label">Staff notation</div>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px">
+        <svg id="staff-svg-scale" xmlns="http://www.w3.org/2000/svg" style="display:block;min-width:200px;"></svg>
+      </div>
+      <div class="piano-wrap">
+        <div class="piano-sub-label" style="font-size:9px">Scale tones on keyboard</div>
+        <div class="piano-scroll"><svg id="staff-scale-piano-svg" viewBox="0 0 840 180" xmlns="http://www.w3.org/2000/svg" style="min-width:420px;width:100%;height:auto;display:block;"></svg></div>
+      </div>
+    </div>
     <div class="legend" id="legend"></div>
     <div class="scale-info" id="scale-info"></div>
     <div class="scale-browser" style="margin-top:24px;">
@@ -748,6 +759,16 @@ body.splash-locked{overflow:hidden;height:100vh;}
       <div id="circle-view-chord" style="display:none">
         <div class="viz-wrap" style="display:flex;justify-content:center;">
           <svg id="chord-mode-circle-svg" viewBox="0 0 360 360" style="width:100%;max-width:380px;height:auto;display:block;margin:0 auto;"></svg>
+        </div>
+      </div>
+      <div id="staff-view-chord" style="display:none">
+        <div class="piano-sub-label">Staff notation</div>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px">
+          <svg id="staff-svg-chord" xmlns="http://www.w3.org/2000/svg" style="display:block;min-width:200px;"></svg>
+        </div>
+        <div class="piano-wrap">
+          <div class="piano-sub-label" style="font-size:9px">Tones on keyboard</div>
+          <div class="piano-scroll"><svg id="staff-chord-piano-svg" viewBox="0 0 840 180" xmlns="http://www.w3.org/2000/svg" style="min-width:420px;width:100%;height:auto;display:block;"></svg></div>
         </div>
       </div>
     </div>
@@ -821,6 +842,14 @@ body.splash-locked{overflow:hidden;height:100vh;}
       <div id="prog-circle-viz" style="display:none">
         <div class="viz-wrap" style="display:flex;justify-content:center;">
           <svg id="prog-circle-svg" viewBox="0 0 400 400" style="width:100%;max-width:380px;height:auto;display:block;margin:0 auto;"></svg>
+        </div>
+      </div>
+      <div id="prog-staff-viz" style="display:none">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px">
+          <svg id="prog-staff-svg" xmlns="http://www.w3.org/2000/svg" style="display:block;min-width:200px;"></svg>
+        </div>
+        <div class="piano-wrap">
+          <div class="piano-scroll"><svg id="prog-staff-piano-svg" viewBox="0 0 840 180" xmlns="http://www.w3.org/2000/svg" style="min-width:420px;width:100%;height:auto;display:block;"></svg></div>
         </div>
       </div>
     </div>
@@ -1568,6 +1597,7 @@ function updateChordModeViz(){
   document.getElementById('guitar-view-chord').style.display=currentView==='guitar'?'':'none';
   document.getElementById('piano-view-chord').style.display=currentView==='piano'?'':'none';
   document.getElementById('circle-view-chord').style.display=currentView==='circle'?'':'none';
+  document.getElementById('staff-view-chord').style.display=currentView==='staff'?'':'none';
 
   if(currentView==='guitar'){
     if(sel){
@@ -1581,11 +1611,21 @@ function updateChordModeViz(){
     } else {
       drawPiano('chord-mode-piano-svg',scaleSet,ivMap,numOctaves,840,180);
     }
-  } else {
+  } else if(currentView==='circle'){
     if(sel){
       drawCircleWithChord('chord-mode-circle-svg',scaleSet,ivMap,sel.chordPcs,sel.ivMap);
     } else {
       drawCircleOfFifths('chord-mode-circle-svg',scaleSet,ivMap);
+    }
+  } else {
+    if(sel){
+      const staffMidis=chordPcsToStaffMidis(sel.chordPcs,sel.rootPc);
+      drawStaffSvg('staff-svg-chord',staffMidis,false,sel.rootPc);
+      drawPianoWithChord('staff-chord-piano-svg',scaleSet,ivMap,new Set(sel.chordPcs),sel.ivMap,2,840,180);
+    } else {
+      const scaleMidis=getScaleMidiNotes(currentRoot,currentScale);
+      drawStaffSvg('staff-svg-chord',scaleMidis,true,currentRoot);
+      drawPiano('staff-chord-piano-svg',scaleSet,ivMap,2,840,180);
     }
   }
 }
@@ -1933,6 +1973,142 @@ function drawCircleWithChord(svgId, scaleSet, scaleIvMap, chordPcs, chordIvMap){
     svg.appendChild(g);
   }
 }
+// ════════════════════════════════════════
+// STAFF NOTATION
+// ════════════════════════════════════════
+const STAFF_STEP_PX = 8;
+const STAFF_BTM_Y   = 94;   // y of bottom staff line (E4)
+const STAFF_TOP_Y   = 30;   // y of top staff line (F5)
+const STAFF_LINE_YS = [30,46,62,78,94]; // F5,D5,B4,G4,E4
+const STAFF_DIAT    = [0,0,1,1,2,3,3,4,4,5,5,6]; // diatonic pos from C for pc 0-11
+const STAFF_IS_SHARP= [0,1,0,1,0,0,1,0,1,0,1,0]; // 1=this pc is a sharp
+
+function staffMidiToY(midi){
+  const pc =((midi%12)+12)%12;
+  const oct=Math.floor(midi/12)-1;
+  return STAFF_BTM_Y-((oct-4)*7+STAFF_DIAT[pc]-2)*STAFF_STEP_PX;
+}
+
+function getScaleMidiNotes(root,scaleName){
+  const ivs=SCALES[scaleName].intervals;
+  let base=60+root;
+  if(base+Math.max(...ivs)>79) base-=12;
+  return [...ivs.map(iv=>base+iv),base+12];
+}
+
+function chordPcsToStaffMidis(chordPcs,rootPc){
+  let rootMidi=60+rootPc;
+  if(rootMidi>71) rootMidi-=12;
+  return chordPcs.map(p=>rootMidi+((p-rootPc+12)%12));
+}
+
+function drawStaffSvg(svgId,midis,isScale,rootPc){
+  const svg=document.getElementById(svgId);
+  if(!svg||!midis||!midis.length) return;
+  svg.innerHTML='';
+  const NS='http://www.w3.org/2000/svg';
+  const st=getComputedStyle(document.documentElement);
+  const col  =st.getPropertyValue('--text').trim()||'#e4e2dd';
+  const gold =st.getPropertyValue('--gold').trim()||'#f0a500';
+  const muted=st.getPropertyValue('--muted-bright').trim()||'#9c9aa4';
+  const bg   =st.getPropertyValue('--bg').trim()||'#0a0a0b';
+
+  const CLEF_W=54,PAD_L=8,PAD_R=20,VIEW_H=160;
+  const NOTE_SP=isScale?52:70;
+  const totalW=PAD_L+CLEF_W+(isScale?midis.length*NOTE_SP:NOTE_SP)+PAD_R;
+
+  svg.setAttribute('viewBox',`0 0 ${totalW} ${VIEW_H}`);
+  svg.setAttribute('preserveAspectRatio','xMinYMid meet');
+  svg.style.cssText=`display:block;width:${Math.min(totalW,800)}px;max-width:100%;height:auto;`;
+
+  function sln(x1,y1,x2,y2,attrs){
+    const e=document.createElementNS(NS,'line');
+    e.setAttribute('x1',x1);e.setAttribute('y1',y1);
+    e.setAttribute('x2',x2);e.setAttribute('y2',y2);
+    for(const[k,v]of Object.entries(attrs)) e.setAttribute(k,v);
+    svg.appendChild(e);
+  }
+  function sel(tag,attrs,text){
+    const e=document.createElementNS(NS,tag);
+    for(const[k,v]of Object.entries(attrs)) e.setAttribute(k,v);
+    if(text!==undefined) e.textContent=text;
+    svg.appendChild(e);
+    return e;
+  }
+
+  // 5 staff lines
+  STAFF_LINE_YS.forEach(ly=>{
+    sln(PAD_L,ly,totalW-PAD_R+8,ly,{stroke:col,'stroke-width':'0.8',opacity:'0.55'});
+  });
+
+  // Treble clef glyph
+  sel('text',{x:PAD_L+3,y:108,'font-size':'82','font-family':'serif',fill:col,opacity:'0.85'},'𝄞');
+
+  // Opening barline
+  const barX=PAD_L+CLEF_W;
+  sln(barX,STAFF_LINE_YS[0],barX,STAFF_LINE_YS[4],{stroke:col,'stroke-width':'1.3',opacity:'0.5'});
+
+  function drawNote(x,midi,isWhole){
+    const ny=staffMidiToY(midi);
+    const pc=((midi%12)+12)%12;
+    const isRoot=pc===rootPc;
+    const nc=isRoot?gold:col;
+
+    // Ledger lines below staff
+    if(ny>STAFF_BTM_Y){
+      for(let ly=STAFF_BTM_Y+2*STAFF_STEP_PX;ly<=ny+1;ly+=2*STAFF_STEP_PX){
+        sln(x-11,ly,x+11,ly,{stroke:col,'stroke-width':'0.9',opacity:'0.55'});
+      }
+    }
+    // Ledger lines above staff
+    if(ny<STAFF_TOP_Y){
+      for(let ly=STAFF_TOP_Y-2*STAFF_STEP_PX;ly>=ny-1;ly-=2*STAFF_STEP_PX){
+        sln(x-11,ly,x+11,ly,{stroke:col,'stroke-width':'0.9',opacity:'0.55'});
+      }
+    }
+
+    // Sharp accidental
+    if(STAFF_IS_SHARP[pc]===1){
+      sel('text',{x:x-13,y:ny+5,'font-size':'13','font-family':'serif','text-anchor':'middle',fill:nc},'♯');
+    }
+
+    if(isWhole){
+      // Whole note: filled oval with bg cutout to create hollow appearance
+      sel('ellipse',{cx:x,cy:ny,rx:'7',ry:'5.5',fill:nc});
+      sel('ellipse',{cx:x,cy:ny,rx:'4',ry:'3',fill:bg});
+    } else {
+      // Quarter note: filled tilted oval + stem
+      sel('ellipse',{cx:x,cy:ny,rx:'6.5',ry:'5',fill:nc,transform:`rotate(-12,${x},${ny})`});
+      const stemUp=ny>=62; // stem up when note is at or below B4 (middle line y=62)
+      const sx=stemUp?x+6:x-6;
+      sln(sx,ny,sx,stemUp?ny-28:ny+28,{stroke:nc,'stroke-width':'1.3'});
+    }
+
+    // Note name label, fixed below staff
+    sel('text',{x,y:'140','font-size':'9','font-family':'Space Mono,monospace','text-anchor':'middle',fill:isRoot?gold:muted,'font-weight':isRoot?'700':'400'},NOTE_NAMES[pc]);
+  }
+
+  if(isScale){
+    midis.forEach((midi,i)=>{
+      drawNote(barX+18+i*NOTE_SP,midi,false);
+    });
+    const endX=barX+18+(midis.length-1)*NOTE_SP+22;
+    sln(endX,STAFF_LINE_YS[0],endX,STAFF_LINE_YS[4],{stroke:col,'stroke-width':'1.3',opacity:'0.5'});
+  } else {
+    // Chord: stacked whole notes at same x
+    const cx=barX+26;
+    midis.forEach(midi=>drawNote(cx,midi,true));
+    // Note labels to the right, at each note's y
+    [...midis].sort((a,b)=>a-b).forEach(midi=>{
+      const pc=((midi%12)+12)%12;
+      const ny=staffMidiToY(midi);
+      sel('text',{x:cx+22,y:ny+4,'font-size':'9','font-family':'Space Mono,monospace','text-anchor':'start',fill:pc===rootPc?gold:muted,'font-weight':pc===rootPc?'700':'400'},NOTE_NAMES[pc]);
+    });
+    const endX=cx+40;
+    sln(endX,STAFF_LINE_YS[0],endX,STAFF_LINE_YS[4],{stroke:col,'stroke-width':'1.3',opacity:'0.5'});
+  }
+}
+
 // Progressions circle: draws the whole progression's path around the circle
 // (traveled segments bright gold, upcoming dim/dashed), step-order badges at
 // each chord's root, then overlays the currently active chord's tones/shape.
@@ -2214,13 +2390,18 @@ function showProgViz(chordPcs, rootPc, label){
   document.getElementById('prog-guitar-viz').style.display=currentView==='guitar'?'':'none';
   document.getElementById('prog-piano-viz').style.display=currentView==='piano'?'':'none';
   document.getElementById('prog-circle-viz').style.display=currentView==='circle'?'':'none';
+  document.getElementById('prog-staff-viz').style.display=currentView==='staff'?'':'none';
 
   if(currentView==='guitar'){
     drawFretboardWithChord('prog-fretboard-svg', scaleSet, scaleIvMap, chordSet2, ivMap, rootPc, TUNINGS[currentTuning], numFrets);
   } else if(currentView==='piano'){
     drawPianoWithChord('prog-piano-svg', scaleSet, scaleIvMap, chordSet2, ivMap, numOctaves, 840, 180);
-  } else {
+  } else if(currentView==='circle'){
     drawProgCircle('prog-circle-svg', scaleSet, scaleIvMap, chordPcs, ivMap);
+  } else {
+    const staffMidis=chordPcsToStaffMidis(chordPcs,rootPc);
+    drawStaffSvg('prog-staff-svg',staffMidis,false,rootPc);
+    drawPianoWithChord('prog-staff-piano-svg',scaleSet,scaleIvMap,chordSet2,ivMap,2,840,180);
   }
 }
 
@@ -2383,6 +2564,7 @@ function buildProgMode(){
   document.getElementById('prog-guitar-viz').style.display = currentView==='guitar' ? '' : 'none';
   document.getElementById('prog-piano-viz').style.display = currentView==='piano' ? '' : 'none';
   document.getElementById('prog-circle-viz').style.display = currentView==='circle' ? '' : 'none';
+  document.getElementById('prog-staff-viz').style.display = currentView==='staff' ? '' : 'none';
 }
 
 // ════════════════════════════════════════
@@ -2420,6 +2602,7 @@ function setView(v){
   document.getElementById('btn-guitar').className='view-btn'+(v==='guitar'?' active':'');
   document.getElementById('btn-piano').className='view-btn'+(v==='piano'?' active':'');
   document.getElementById('btn-circle').className='view-btn'+(v==='circle'?' active':'');
+  document.getElementById('btn-staff').className='view-btn'+(v==='staff'?' active':'');
   // tuning group only visible in guitar view (in sub-dash)
   const tg=document.getElementById('tuning-group');
   if(tg) tg.style.display=v==='guitar'?'':'none';
@@ -2483,8 +2666,8 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v2.7';
-const APP_VERSION_DATE = 'August 4, 2026';
+const APP_VERSION = 'v2.8';
+const APP_VERSION_DATE = 'August 5, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){
   splashVersionFooter.innerHTML = `Music Theory Visualizer ${APP_VERSION}<br>© ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.`;
@@ -2675,12 +2858,17 @@ function render(){
     document.getElementById('guitar-view-scale').style.display=currentView==='guitar'?'':'none';
     document.getElementById('piano-view-scale').style.display=currentView==='piano'?'':'none';
     document.getElementById('circle-view-scale').style.display=currentView==='circle'?'':'none';
+    document.getElementById('staff-view-scale').style.display=currentView==='staff'?'':'none';
     if(currentView==='guitar'){
       drawFretboard('fretboard-svg',scaleSet,ivMap,openStrings,numFrets);
     } else if(currentView==='piano'){
       drawPiano('piano-svg-scale',scaleSet,ivMap,numOctaves,840,180);
-    } else {
+    } else if(currentView==='circle'){
       drawCircleOfFifths('circle-svg-scale',scaleSet,ivMap);
+    } else {
+      const scaleMidis=getScaleMidiNotes(currentRoot,currentScale);
+      drawStaffSvg('staff-svg-scale',scaleMidis,true,currentRoot);
+      drawPiano('staff-scale-piano-svg',scaleSet,ivMap,2,840,180);
     }
     buildLegend();
     buildInfoCard();
