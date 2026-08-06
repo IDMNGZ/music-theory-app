@@ -616,8 +616,27 @@ main{max-width:1100px;margin:0 auto;padding:18px 20px 60px;}
 .bug-report-btn:hover,.bug-report-btn:active{transform:scale(.96);opacity:.85;}
 body.splash-locked{overflow:hidden;height:100vh;}
 </style>
-</head>
-<body class="splash-locked">
+<!-- qrcode-generator by kazuhikoarase — MIT license -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+function makeQRSvg(url, px){
+  px = px || 160;
+  var qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  var n = qr.getModuleCount();
+  var cell = px / n;
+  var rects = '';
+  for(var r=0;r<n;r++){
+    for(var c=0;c<n;c++){
+      if(qr.isDark(r,c)){
+        rects += '<rect x="'+(c*cell).toFixed(2)+'" y="'+(r*cell).toFixed(2)+'" width="'+cell.toFixed(2)+'" height="'+cell.toFixed(2)+'"/>';
+      }
+    }
+  }
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+px+' '+px+'" width="'+px+'" height="'+px+'" style="display:block;border-radius:6px;background:#fff;padding:6px;box-sizing:border-box;"><g fill="#111">'+rects+'</g></svg>';
+}
+</script>
 
 <!-- app background overlay (bg-image set on body by JS) -->
 <div id="app-bg-overlay"></div>
@@ -2670,7 +2689,17 @@ function setMode(m){
 // INSTRUCTIONS
 // ════════════════════════════════════════
 const BUG_REPORT_EMAIL = 'RogueTheoryStudio@pm.me';
-const APP_VERSION = 'v3.1';
+const APP_VERSION = 'v3.2';
+
+// ── Other Apps list — add entries here as new apps are built ──
+const OTHER_APPS = [
+  {
+    name: 'MTG Deck Builder',
+    desc: 'Build, browse, and tune Magic: The Gathering decks with live Scryfall card data.',
+    url:  'https://idmngz.github.io/mtg-deckbuilder/',
+    icon: '🃏',
+  },
+];
 const APP_VERSION_DATE = 'August 5, 2026';
 const splashVersionFooter = document.getElementById('splash-version-footer');
 if(splashVersionFooter){
@@ -2810,6 +2839,26 @@ function buildAbout(){
           If you like this app, please consider donating to my Venmo.
           Thank you very much, and Enjoy!
         </div>
+      </div>
+    `)}
+    ${helpSection('Other Apps',`
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+        ${OTHER_APPS.map(app=>`
+          <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+            <div style="font-size:15px;font-weight:700;color:var(--text);">${app.icon} ${app.name}</div>
+            <div style="font-size:13px;color:var(--muted-bright);line-height:1.5;flex:1;">${app.desc}</div>
+            <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+              <div>${makeQRSvg(app.url,140)}</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <a href="${app.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:#1a3a6b;color:#aaccff;border:none;border-radius:8px;font-size:13px;font-weight:600;padding:9px 16px;text-decoration:none;white-space:nowrap;">🔗 Visit App</a>
+                <button onclick="navigator.share&&navigator.share({title:'${app.name}',url:'${app.url}'}).catch(()=>{})||window.open('${app.url}')" style="display:inline-flex;align-items:center;gap:7px;background:#1a4a4a;color:#aaffee;border:none;border-radius:8px;font-size:13px;font-weight:600;padding:9px 16px;cursor:pointer;white-space:nowrap;">
+                  <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><circle cx="16" cy="3" r="2.5"/><circle cx="16" cy="17" r="2.5"/><circle cx="4" cy="10" r="2.5"/><line x1="6.1" y1="9.1" x2="13.9" y2="4.2" stroke="currentColor" stroke-width="1.8"/><line x1="6.1" y1="10.9" x2="13.9" y2="15.8" stroke="currentColor" stroke-width="1.8"/></svg>
+                  Share
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
       </div>
     `)}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;align-items:start;">
