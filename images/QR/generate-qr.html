@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>QR Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+</head>
+<body style="font-family:sans-serif;padding:24px;">
+<h2>QR Code Generator</h2>
+<p>Open this file locally, generate a QR, then right-click the image → Save As to save it to this folder.</p>
+<div style="margin-bottom:12px;">
+  <label>URL: <input id="url" value="https://idmngz.github.io/music-theory-app/" style="width:400px;padding:6px;"></label>
+  <label style="margin-left:12px;">Size (px): <input id="size" type="number" value="300" style="width:70px;padding:6px;"></label>
+  <button onclick="gen()" style="margin-left:12px;padding:6px 16px;cursor:pointer;">Generate</button>
+</div>
+<div id="out" style="background:#fff;display:inline-block;padding:12px;border-radius:8px;"></div>
+<script>
+function gen(){
+  var url=document.getElementById('url').value;
+  var px=parseInt(document.getElementById('size').value)||300;
+  var qr=qrcode(0,'M');
+  qr.addData(url);
+  qr.make();
+  var n=qr.getModuleCount();
+  var cell=px/n;
+  var rects='';
+  for(var r=0;r<n;r++)for(var c=0;c<n;c++)if(qr.isDark(r,c))rects+='<rect x="'+(c*cell).toFixed(2)+'" y="'+(r*cell).toFixed(2)+'" width="'+cell.toFixed(2)+'" height="'+cell.toFixed(2)+'"/>';
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+px+' '+px+'" width="'+px+'" height="'+px+'"><rect width="'+px+'" height="'+px+'" fill="#fff"/><g fill="#111">'+rects+'</g></svg>';
+  document.getElementById('out').innerHTML=svg;
+}
+gen();
+</script>
+</body>
+</html>
