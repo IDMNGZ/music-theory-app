@@ -2819,68 +2819,71 @@ function buildAbout(){
   const wrap = document.getElementById('mode-about');
   if(wrap.dataset.built) return;
   wrap.dataset.built = '1';
-  const aboutCard=(title,body)=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;height:100%;box-sizing:border-box;">
-    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;">${title}</div>
-    <div style="font-size:13px;color:var(--text);opacity:.8;line-height:1.7;">${body}</div>
-  </div>`;
+  const S='background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:16px;';
+  const H='margin:0 0 12px;font-size:17px;font-weight:700;color:var(--text);';
   wrap.innerHTML = `<div style="max-width:1100px;margin:0 auto;">
-    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;">About</div>
-    <h2 style="font-size:clamp(18px,3vw,26px);font-weight:700;letter-spacing:-.02em;margin-bottom:20px;">Created by Ian Dominguez</h2>
-    ${helpSection('Bio',`
-      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
-        <img src="images/about/IanD_BioPic.JPG" alt="Ian Dominguez" style="flex:0 0 auto;display:block;width:175px;height:175px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);" onerror="this.style.display='none'">
-        <div style="flex:1 1 280px;min-width:0;">
-          I am a principal game designer, indie writer, indie artist, and self-taught amateur musician (both Guitar and Keyboard)
-          <br><br>
-          With no formal training in Music Theory... I created this app because I was tired of guessing how music theory works.
-          <br><br>
-          Use this app to quickly visualize the mystery of music theory, special tunings, unique scales, every chord, and how it works across music progressions.
-          <br><br>
-          If you like this app, please consider donating to my Venmo.
-          Thank you very much, and Enjoy!
+
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">About</div>
+      <h2 style="font-size:26px;font-weight:700;margin:0;color:var(--text);">Created by Ian Dominguez</h2>
+    </div>
+
+    <div style="${S}">
+      <div style="${H}">Bio</div>
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+        <img src="images/about/IanD_BioPic.JPG" alt="Ian Dominguez" style="width:240px;height:240px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;display:block;flex-shrink:0;" onerror="this.style.display='none'">
+        <div style="flex:1;min-width:200px;max-width:640px;font-size:14px;line-height:1.6;color:var(--muted-bright);">
+          <p style="margin:0 0 12px;">I am a principal game designer, indie writer, indie artist, and self-taught amateur musician (both Guitar and Keyboard)</p>
+          <p style="margin:0 0 12px;">With no formal training in Music Theory... I created this app because I was tired of guessing how music theory works.</p>
+          <p style="margin:0 0 12px;">Use this app to quickly visualize the mystery of music theory, special tunings, unique scales, every chord, and how it works across music progressions.</p>
+          <p style="margin:0;">If you like this app, please consider donating to my Venmo. Thank you very much, and Enjoy!</p>
         </div>
       </div>
-    `)}
-    ${helpSection('Other Apps',`
-      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:16px;">
+      <div style="${S}margin-bottom:0;">
+        <div style="${H}">Links</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <a href="https://www.iandominguez.com" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-size:14px;">iandominguez.com</a>
+          <a href="https://www.instagram.com/idmngz.me" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-size:14px;">@idmngz.me</a>
+          <a href="https://www.instagram.com/roguetheorystudio" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;font-size:14px;">@roguetheorystudio</a>
+        </div>
+      </div>
+      <div style="${S}margin-bottom:0;">
+        <div style="${H}">Support This App</div>
+        <p style="font-size:14px;color:var(--muted-bright);line-height:1.5;margin:0 0 14px;">If you enjoy using this app, consider supporting future updates with a donation. Thank you!</p>
+        <a href="https://www.venmo.com/u/IDMNGZ" target="_blank" rel="noopener" style="display:inline-block;padding:10px 28px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;background:#3b8fe0;color:#fff;">Donate</a>
+      </div>
+      <div style="${S}margin-bottom:0;">
+        <div style="${H}">Found a Bug? Have a Suggestion?</div>
+        <p style="font-size:14px;color:var(--muted-bright);line-height:1.5;margin:0 0 14px;">If something in the app is broken, inaccurate, or confusing — or you just have an idea — let me know.</p>
+        <a href="mailto:${BUG_REPORT_EMAIL}?subject=Music%20Theory%20Visualizer%20Feedback" style="display:inline-block;padding:10px 28px;border-radius:8px;font-weight:600;font-size:14px;text-decoration:none;background:#c9762c;color:#fff;">Contact</a>
+      </div>
+    </div>
+
+    <div style="${S}">
+      <div style="${H}">My Other Apps</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
         ${OTHER_APPS.map(app=>`
-          <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;width:170px;flex:0 0 170px;display:flex;flex-direction:column;">
-            <img src="${app.img}" alt="${app.name}" style="width:100%;height:130px;object-fit:cover;display:block;" onerror="this.style.display='none'">
-            <div style="padding:12px;display:flex;flex-direction:column;gap:8px;flex:1;">
-              <div style="font-size:14px;font-weight:700;color:var(--text);">${app.name}</div>
-              <div style="font-size:12px;color:var(--muted-bright);line-height:1.5;flex:1;">${app.desc}</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-                <a href="${app.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;background:#1a3a6b;color:#aaccff;border-radius:6px;font-size:12px;font-weight:600;padding:7px 12px;text-decoration:none;">Visit</a>
-                <button onclick="(navigator.share?navigator.share({title:'${app.name}',url:'${app.url}'}):Promise.resolve()).catch(()=>{})" style="display:inline-flex;align-items:center;gap:5px;background:#1a4a4a;color:#aaffee;border:none;border-radius:6px;font-size:12px;font-weight:600;padding:7px 12px;cursor:pointer;">
-                  <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="16" cy="3" r="2.5"/><circle cx="16" cy="17" r="2.5"/><circle cx="4" cy="10" r="2.5"/><line x1="6.1" y1="9.1" x2="13.9" y2="4.2" stroke="currentColor" stroke-width="1.8"/><line x1="6.1" y1="10.9" x2="13.9" y2="15.8" stroke="currentColor" stroke-width="1.8"/></svg>
-                  Share
-                </button>
+          <div style="display:flex;flex-direction:column;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+            <img src="${app.img}" alt="${app.name}" style="display:block;width:100%;height:110px;object-fit:cover;border-radius:6px;margin-bottom:12px;" onerror="this.style.display='none'">
+            <div style="display:flex;flex-direction:column;flex:1;min-width:0;">
+              <div style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--text);">${app.name}</div>
+              <p style="font-size:13px;color:var(--muted-bright);margin:0 0 10px;line-height:1.4;flex:1;">${app.desc}</p>
+              <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid var(--border);">
+                <a href="${app.url}" target="_blank" rel="noopener" style="flex:1;display:inline-block;text-align:center;border:1px solid var(--border);background:var(--surface2);color:var(--text);padding:7px 12px;border-radius:6px;font-size:13px;text-decoration:none;box-sizing:border-box;">Visit</a>
+                <button onclick="(navigator.share?navigator.share({title:'${app.name}',url:'${app.url}'}):Promise.resolve()).catch(()=>{})" style="flex:1;border:1px solid var(--border);background:var(--surface2);color:var(--text);padding:7px 12px;border-radius:6px;font-size:13px;cursor:pointer;">Share</button>
               </div>
             </div>
           </div>
         `).join('')}
       </div>
-    `)}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;align-items:start;">
-      ${aboutCard('Links',`
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <a href="https://www.iandominguez.com" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">🌐 iandominguez.com</a>
-          <a href="https://www.instagram.com/idmngz.me" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">📷 @idmngz.me</a>
-          <a href="https://www.instagram.com/roguetheorystudio" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;opacity:.85;">📷 @roguetheorystudio</a>
-        </div>
-      `)}
-      ${aboutCard('Support This App',`
-        If you enjoy using this app, consider supporting future updates with a donation. Thank you!<br><br>
-        <a href="https://www.venmo.com/u/IDMNGZ" target="_blank" rel="noopener" class="about-venmo-btn">💜 Donate</a>
-      `)}
-      ${aboutCard('Found a Bug? Have a Suggestion?',`
-        If something in the app is broken, inaccurate, or confusing — or you just have an idea — let me know.<br><br>
-        <a class="bug-report-btn" href="mailto:${BUG_REPORT_EMAIL}?subject=Music%20Theory%20Visualizer%20Feedback">Contact</a>
-      `)}
     </div>
-    <div style="text-align:center;margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
+
+    <div style="text-align:center;font-size:12px;color:var(--muted-bright);padding:20px 0 8px;line-height:1.8;">
       Music Theory Visualizer ${APP_VERSION}<br>
-      © ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
+      &copy; ${new Date().getFullYear()} Ian Dominguez / Rogue Theory Studio. All rights reserved.
     </div>
   </div>`;
 }
